@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#92334c",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#3f493e",
+                        "inverse-on-surface": "#eaf1ff",
+                        "outline-variant": "#bfcabb",
+                        "surface-dim": "#cbdbf5",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#207d3a",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#c3ffc5",
+                        "outline": "#6f7a6d",
+                        "tertiary-container": "#b14b64",
+                        "primary-fixed-dim": "#80da8c",
+                        "primary": "#006327",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#80da8c",
+                        "on-primary-fixed-variant": "#00531f",
+                        "tertiary-fixed-dim": "#ffb1bf",
+                        "on-tertiary-fixed-variant": "#80253f",
+                        "on-secondary-container": "#57657b",
+                        "on-tertiary-container": "#ffecee",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "inverse-surface": "#213145",
+                        "surface": "#f8f9ff",
+                        "background": "#f8f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "secondary": "#515f74",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#0b1c30",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-fixed": "#9bf7a5",
+                        "surface-variant": "#d3e4fe",
+                        "tertiary-fixed": "#ffd9de",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-tertiary-fixed": "#3f0016",
+                        "secondary-container": "#d5e3fd",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-primary-fixed": "#002108",
+                        "surface-tint": "#046d2d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "component-padding-x": "1rem",
+                        "section-gap": "2rem",
+                        "container-padding": "2rem",
+                        "gutter": "1.5rem",
+                        "component-padding-y": "0.5rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "body-base": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden md:flex flex-col w-64 border-r border-outline-variant bg-surface-container-lowest shadow-sm">
+<div class="px-6 py-8 flex flex-col gap-1">
+<h2 class="font-h2 text-h2 font-bold text-on-surface">Importaciones CRESGO</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sistema de Planilla</p>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-base">Planilla</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-base">Constancias</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="font-body-base">Transferencias</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-body-base">Maestros</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-primary font-bold border-r-4 border-primary bg-surface-container-low" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-base">Usuarios</span>
+</a>
+</nav>
+<div class="p-3 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base">Ajustes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-section-gap py-component-padding-y z-30 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 border-b border-outline-variant">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container border-none rounded-full py-2 pl-10 pr-4 text-body-base focus:ring-2 focus:ring-primary transition-shadow" placeholder="Buscar usuarios..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
+<span class="material-symbols-outlined text-primary">help</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3 pl-2">
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A professional corporate headshot of a middle-aged male executive with a confident smile, wearing a sharp navy blue suit and white shirt. The background is a blurred high-end office interior with soft, natural lighting. The overall aesthetic is professional, clean, and trustworthy, perfectly fitting a corporate financial management application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmn_dzpGghUCQQ5pXynKe_q1ivYwZHc6nCpzYzs98yhbrUTEFyRZRxcgrusotl2RJT_iaNDk_xQ3KrJH-ao6hfPg3zciD2bgcFx2wtZfx4QBBsVPKExdSr5VV2Tjd_F31Ke_ZgoVy05fOD5abcbrEzovvoOljCnZKyay8uMqRdvZhI5ZPd20HWMjmTJvETTBzMa8nNGBjk4grUTDUavvA3f_mADRVFE89hEF2LJAy73h7P-H8OpbdghFnw6ctlEQhc1B9nOKkpdhly"/>
+<span class="font-body-base font-semibold hidden lg:block">Admin Cresgo</span>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-container-padding space-y-gutter flex-1">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Gestión de Usuarios</h1>
+<p class="font-body-base text-on-surface-variant">Administre los accesos y roles de los usuarios del sistema.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-body-base font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
+<span class="material-symbols-outlined">person_add</span>
+                    + Invitar Usuario
+                </button>
+</div>
+<!-- Main Controls (Filters & Stats) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<div class="md:col-span-12 lg:col-span-12">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-wrap gap-4 items-center justify-between">
+<div class="flex flex-wrap gap-3 items-center">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container rounded-lg text-body-sm text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+<span>Filtrar por:</span>
+</div>
+<select class="bg-surface border border-outline-variant rounded-lg text-body-sm py-1.5 px-3 focus:ring-primary focus:border-primary">
+<option>Todos los Roles</option>
+<option>Admin</option>
+<option>Empleado</option>
+</select>
+<select class="bg-surface border border-outline-variant rounded-lg text-body-sm py-1.5 px-3 focus:ring-primary focus:border-primary">
+<option>Todos los Estados</option>
+<option>Activo</option>
+<option>Inactivo</option>
+</select>
+</div>
+<div class="text-body-sm text-on-surface-variant">
+                            Total: <span class="font-bold text-on-surface">25 usuarios</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Usuario</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Rol</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Empleado Vinculado</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Estado</th>
+<th class="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="User" class="w-10 h-10 rounded-full object-cover" data-alt="A detailed portrait of a young Hispanic male employee with a warm and approachable expression. He is wearing a professional light green polo shirt, consistent with the corporate color scheme. The lighting is bright and even, against a clean, out-of-focus modern office background, emphasizing a high-end corporate management interface feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA96IhAyzWNTPLrHNj7Dv_D9rj2GaAXfUyUeqn3cp20o1hT68zfq9pW15eZLeLUgJH6nwoVDiGlcer8fmdSCGEiDlBKU_KnCfcnfw_n7IxmHnC7ZNqOW2_JCNiBPFNkIfr7s4KO0Ic_h1EBmCyIPRI3M9imGSRvKv0XAXAhyGfVd5-HS8Cz0MfPSEJpFOYOirAV8IovCB5sb7MdoezNAyWiQittPeGSKYAOhjTGLIG6EXU6nhZkqXwmUFlv2rn9JCXo5dFwlp-cZ3UW"/>
+<div>
+<div class="font-body-base font-semibold text-on-surface">Carlos Mendoza</div>
+<div class="text-body-sm text-on-surface-variant">carlos.mendoza@cresgo.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-label-caps font-bold bg-primary/10 text-primary">Admin</span>
+</td>
+<td class="px-6 py-4 font-data-tabular text-on-surface">N/A</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-primary">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-sm font-medium">Activo</span>
+</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container rounded-lg text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container/20 rounded-lg text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="bg-surface-container-low/20 hover:bg-surface/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="User" class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of a professional woman with a friendly smile, representing an employee user. She has dark hair and is dressed in a professional blazer. The photograph uses soft, natural lighting in a bright, modern corporate environment. The image is clean and integrated into a professional payroll system UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjsMxAAONhUDCAWIxzLYP7xGrwR8uRvfrmDBYXJuNmkU2ZgcuYLbd7FRfPWQmgv5CoSMgFV3KveMVXqYCJtmnbKMruGv6Nkm5xVvVn3YF4wEB2YKz7TuNbYe-U25rPdqxVmbbriV1HrRzqraxAmcf267AIxvx1h7a0M1NQq7cPbz6WqD5Sf3QDBeYTLdAh_5BFdsPdnIMlRt9T817gHkDCPZtpa_8-AfZOcNlZ4ctU0-oT3_MDKHyCXgswjekI-HgREws2eI9ltFaj"/>
+<div>
+<div class="font-body-base font-semibold text-on-surface">Ana Lucía Torres</div>
+<div class="text-body-sm text-on-surface-variant">ana.torres@cresgo.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-label-caps font-bold bg-secondary-container text-on-secondary-container">Empleado</span>
+</td>
+<td class="px-6 py-4 font-data-tabular text-on-surface">Ana Lucía Torres (EMP-022)</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-primary">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-sm font-medium">Activo</span>
+</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container rounded-lg text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-error-container/20 rounded-lg text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface/50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<img alt="User" class="w-10 h-10 rounded-full object-cover" data-alt="A clean, high-resolution portrait of a senior professional male employee. He is wearing glasses and a formal business shirt. The background is a bright, minimalist office setting with a shallow depth of field. The style is consistent with a modern, high-density corporate application for financial management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAps0dApdzkeO-GojVhHOfhOIV0rBj_MSUcx-I6wMRnk3w6FIUGxCpVnEpiaXJVZhDN9QgjGoUhDNbQFwZf45VTvU_OUjg5W_nfPZmtbwpDeKGkyiIzkoJUi2Lqr6y8SHqp0Zt_h3a7jQOCf-33yyGoHeHOU4Jk_fk0seVhV8pzmwlk-Yy6R2yBUwHKSbzXij7Q1lQjx7OqMAGP5ilGAPAMZo3gdk8bK-dJWJw4ftAGZEok9ipUfm1x_VPAP9GLwpAlbbfCUgaSZjJm"/>
+<div>
+<div class="font-body-base font-semibold text-on-surface">Roberto Gómez</div>
+<div class="text-body-sm text-on-surface-variant">roberto.gomez@cresgo.com</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-label-caps font-bold bg-secondary-container text-on-secondary-container">Empleado</span>
+</td>
+<td class="px-6 py-4 font-data-tabular text-on-surface">Roberto Gómez (EMP-105)</td>
+<td class="px-6 py-4">
+<span class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-body-sm font-medium">Inactivo</span>
+</span>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 hover:bg-surface-container rounded-lg text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 hover:bg-primary-fixed/20 rounded-lg text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 bg-surface-container-low/30 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="font-body-sm text-on-surface-variant">Mostrando <span class="font-bold text-on-surface">1 a 10</span> de <span class="font-bold text-on-surface">25</span> usuarios</p>
+<div class="flex items-center gap-2">
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary text-on-primary font-body-sm font-bold shadow-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-body-sm transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-body-sm transition-colors">3</button>
+<button class="p-2 border border-outline-variant rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Branding -->
+<footer class="mt-auto px-container-padding py-8 text-center">
+<p class="text-label-caps text-on-surface-variant">© 2024 Importaciones CRESGO | Todos los derechos reservados.</p>
+</footer>
+</main>
+</body></html>

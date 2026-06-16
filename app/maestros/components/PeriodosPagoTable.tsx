@@ -1,0 +1,192 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
+
+interface PeriodoPago {
+  id_periodo: number;
+  mes: string;
+  anio: number;
+  tipo: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  cerrado: boolean;
+  empresa: {
+    nombre: string;
+  } | null;
+}
+
+export default function PeriodosPagoTable() {
+  const [data, setData] = useState<PeriodoPago[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [estadoFilter, setEstadoFilter] = useState("TODOS");
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 10;
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    let query = supabase
+      .from("periodo_pago")
+      .select("*, empresa(nombre)", { count: "exact" });
+
+    if (debouncedSearch) {
+      query = query.or(`mes.ilike.%${debouncedSearch}%`);
+    }
+
+    if (estadoFilter !== "TODOS") {
+      query = query.eq("cerrado", estadoFilter === "CERRADO");
+    }
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    // Order by id_periodo descending so newest is first
+    const { data: result, error, count } = await query.range(from, to).order("id_periodo", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching periodos:", error);
+    } else {
+      setData((result as unknown as PeriodoPago[]) || []);
+      setTotalCount(count || 0);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [page, debouncedSearch, estadoFilter]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl shadow-sm flex flex-wrap gap-4 items-center">
+        <div className="flex-1 min-w-[240px]">
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-on-surface-variant">
+              <span className="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+            </span>
+            <input
+              className="w-full pl-10 pr-4 py-2 bg-background border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary rounded-lg text-body-sm"
+              placeholder="Filtrar por mes..."
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+        <select 
+          className="bg-background border border-outline-variant rounded-lg px-4 py-2 text-body-sm focus:ring-primary focus:border-primary"
+          value={estadoFilter}
+          onChange={(e) => { setEstadoFilter(e.target.value); setPage(1); }}
+        >
+          <option value="TODOS">Todos los Estados</option>
+          <option value="ABIERTO">Abiertos</option>
+          <option value="CERRADO">Cerrados</option>
+        </select>
+        <button className="bg-surface-container border border-outline-variant text-on-surface px-4 py-2 rounded-lg text-body-sm font-medium hover:bg-surface-container-high transition-colors">
+          Exportar Excel
+        </button>
+      </div>
+
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-surface-container-low/50 text-on-surface-variant border-b border-outline-variant">
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider">Empresa</th>
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider">Mes/Año</th>
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider">Tipo</th>
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider">Fechas</th>
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider text-center">Estado</th>
+                <th className="px-6 py-4 font-label-caps text-label-caps uppercase tracking-wider text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">Cargando...</td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">No se encontraron registros.</td>
+                </tr>
+              ) : (
+                data.map((item) => (
+                  <tr key={item.id_periodo} className="hover:bg-surface-container/30 transition-colors">
+                    <td className="px-6 py-4 text-body-base text-on-surface font-medium">{item.empresa?.nombre || "-"}</td>
+                    <td className="px-6 py-4 font-data-tabular text-data-tabular text-on-surface font-bold">{item.mes} {item.anio}</td>
+                    <td className="px-6 py-4 text-body-base text-on-surface">{item.tipo}</td>
+                    <td className="px-6 py-4 text-body-sm text-on-surface-variant">{item.fecha_inicio} al {item.fecha_fin}</td>
+                    <td className="px-6 py-4 text-center">
+                      {item.cerrado ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-8 h-4 bg-primary/20 rounded-full relative cursor-pointer">
+                            <div className="absolute right-0 top-0 w-4 h-4 bg-primary rounded-full shadow-sm"></div>
+                          </div>
+                          <span className="text-[12px] font-medium text-primary">Cerrado</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-8 h-4 bg-outline-variant/30 rounded-full relative cursor-pointer">
+                            <div className="absolute left-0 top-0 w-4 h-4 bg-white border border-outline-variant rounded-full shadow-sm"></div>
+                          </div>
+                          <span className="text-[12px] font-medium text-on-surface-variant">Abierto</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-1">
+                        <button className="p-2 hover:bg-surface-variant/50 rounded-lg text-secondary transition-colors">
+                          <span className="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-surface-container-low px-6 py-4 flex justify-between items-center border-t border-outline-variant">
+          <p className="text-body-sm text-on-surface-variant">
+            Mostrando {data.length} de {totalCount} períodos
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="px-3 py-1 text-on-surface font-medium">Página {page} de {totalPages || 1}</span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

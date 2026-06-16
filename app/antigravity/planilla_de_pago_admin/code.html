@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Importaciones CRESGO - Gestión de Planilla</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#0b1c30",
+                    "on-tertiary-container": "#ffecee",
+                    "secondary": "#515f74",
+                    "surface-container-low": "#eff4ff",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "on-primary-container": "#c3ffc5",
+                    "surface-dim": "#cbdbf5",
+                    "outline": "#6f7a6d",
+                    "tertiary-fixed": "#ffd9de",
+                    "surface-container": "#e5eeff",
+                    "error": "#ba1a1a",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-container": "#b14b64",
+                    "background": "#f8f9ff",
+                    "on-tertiary-fixed": "#3f0016",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "on-background": "#0b1c30",
+                    "inverse-primary": "#80da8c",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "primary": "#006327",
+                    "primary-fixed": "#9bf7a5",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed-dim": "#ffb1bf",
+                    "on-tertiary-fixed-variant": "#80253f",
+                    "primary-fixed-dim": "#80da8c",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#213145",
+                    "on-primary-fixed-variant": "#00531f",
+                    "tertiary": "#92334c",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#046d2d",
+                    "on-primary-fixed": "#002108",
+                    "outline-variant": "#bfcabb",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary-container": "#207d3a",
+                    "on-secondary-container": "#57657b",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#3f493e",
+                    "on-primary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "secondary-fixed": "#d5e3fd",
+                    "secondary-container": "#d5e3fd",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "section-gap": "2rem",
+                    "container-padding": "2rem",
+                    "gutter": "1.5rem",
+                    "component-padding-x": "1rem",
+                    "component-padding-y": "0.5rem"
+            },
+            "fontFamily": {
+                    "body-base": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h3": ["Inter"],
+                    "h2": ["Inter"],
+                    "h1": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "h1": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #bfcabb;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #6f7a6d;
+      }
+    </style>
+</head>
+<body class="bg-background font-body-base text-on-surface">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 left-0 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center w-full px-section-gap py-component-padding-y">
+<div class="flex items-center gap-4">
+<h1 class="text-h3 font-h3 font-bold text-primary">Importaciones CRESGO</h1>
+<div class="h-6 w-px bg-outline-variant hidden md:block"></div>
+<span class="text-body-base font-medium text-secondary hidden md:block">Sistema de Planilla</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative group">
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors active:opacity-70">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+</button>
+</div>
+<div class="relative group">
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors active:opacity-70">
+<span class="material-symbols-outlined text-primary" data-icon="help">help</span>
+</button>
+</div>
+<div class="flex items-center gap-2 ml-2 pl-4 border-l border-outline-variant">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a corporate administrative professional with a friendly expression. The lighting is bright and clean, consistent with a high-end office environment. The style is modern corporate with a focus on professional reliability and efficiency, using a bright white and soft blue background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFRdvEMYA1JVhduWCBkTEWROQ31OCdcIBaeTyItJSzifi0OBHdvkzDHg84aCIubvcaqnxuYk6aSsGb3U0J0sb5ZpYSGo0bHwO6HZd8SMimHlMSz1NV-I1pMnGSWmytfjGcxs9DeWWPImitkMvHe9Xu_Q1yNJJ8y20ogSlJiQ7y_0elSqQof7ei6lcW8xJ61g3i1zyzhCzuYf9AJ6LzUx-RMVRXBiKRrs3C1cq_IItmiPNQcnLFQBzQh6QGyNJ_IRngPWLCE44O3_i_"/>
+<span class="text-body-sm font-medium text-on-surface-variant hidden lg:block">Admin Usuario</span>
+</div>
+</div>
+</header>
+<!-- Side Navigation Anchor -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden md:flex flex-col w-64 bg-surface-container-lowest border-r border-outline-variant shadow-sm pt-20">
+<nav class="flex-1 px-2 py-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-primary font-bold border-r-4 border-primary bg-surface-container-low" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-body-base">Planilla</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-body-base">Constancias</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="text-body-base">Transferencias</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="text-body-base">Maestros</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-body-base">Usuarios</span>
+</a>
+</nav>
+<div class="px-2 py-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-body-base">Ajustes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error-container transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-body-base">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-24 pb-12 px-section-gap">
+<!-- Action Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h2 class="text-h2 font-h2 text-on-surface mb-2">Ingreso de Datos de Planilla</h2>
+<div class="flex items-center gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-label-caps text-on-surface-variant">PERÍODO DE PLANILLA</label>
+<div class="relative">
+<select class="bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 pr-10 text-body-base focus:ring-2 focus:ring-primary focus:outline-none appearance-none min-w-[240px]">
+<option>Quincena 1 - Octubre 2023</option>
+<option selected="">Quincena 2 - Octubre 2023</option>
+<option>Quincena 1 - Noviembre 2023</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-secondary pointer-events-none" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<div class="mt-auto">
+<button class="bg-surface-container-lowest border border-outline-variant text-secondary px-4 py-2 rounded-lg font-medium hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span>
+                            Filtrar
+                        </button>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-error text-on-error px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock_open">lock_open</span>
+                    Cerrar Período
+                </button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="save">save</span>
+                    Guardar Cambios
+                </button>
+</div>
+</div>
+<!-- Data Grid Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col border-t-4 border-t-primary">
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse min-w-[1200px]">
+<thead>
+<!-- Multi-level Header -->
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-4 py-3 text-label-caps text-on-surface-variant border-r border-outline-variant w-64 sticky left-0 bg-surface-container-low z-20" rowspan="2">EMPLEADO</th>
+<th class="px-4 py-2 text-center text-label-caps text-primary border-r border-outline-variant bg-primary/5" colspan="3">INGRESOS (Q)</th>
+<th class="px-4 py-2 text-center text-label-caps text-tertiary border-r border-outline-variant bg-tertiary/5" colspan="4">DESCUENTOS (Q)</th>
+<th class="px-4 py-2 text-center text-label-caps text-on-surface bg-surface-container-high">RESUMEN (Q)</th>
+</tr>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<!-- Ingresos -->
+<th class="px-4 py-2 text-label-caps text-on-surface-variant font-medium border-r border-outline-variant">SALARIO</th>
+<th class="px-4 py-2 text-label-caps text-on-surface-variant font-medium border-r border-outline-variant">BONOS</th>
+<th class="px-4 py-2 text-label-caps text-primary font-bold border-r border-outline-variant">TOTAL ING.</th>
+<!-- Descuentos -->
+<th class="px-4 py-2 text-label-caps text-on-surface-variant font-medium border-r border-outline-variant">IGSS (4.83%)</th>
+<th class="px-4 py-2 text-label-caps text-on-surface-variant font-medium border-r border-outline-variant">ISR</th>
+<th class="px-4 py-2 text-label-caps text-on-surface-variant font-medium border-r border-outline-variant">OTROS</th>
+<th class="px-4 py-2 text-label-caps text-tertiary font-bold border-r border-outline-variant">TOTAL DESC.</th>
+<!-- Resumen -->
+<th class="px-4 py-2 text-label-caps text-on-surface font-bold bg-surface-container-high">LÍQUIDO</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-4 py-3 border-r border-outline-variant sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container z-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant flex items-center justify-center font-bold text-[12px]">AG</div>
+<div>
+<div class="text-data-tabular text-on-surface">Alejandro Guzmán</div>
+<div class="text-[11px] text-secondary">ID: 00124 • Gerencia</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="8,500.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="250.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-primary text-data-tabular">Q 8,750.00</td>
+<td class="px-4 py-3 border-r border-outline-variant text-right text-data-tabular">410.55</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-tertiary text-data-tabular">Q 410.55</td>
+<td class="px-4 py-3 bg-surface-container-high/30 text-right font-bold text-on-surface text-data-tabular">Q 8,339.45</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-4 py-3 border-r border-outline-variant sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container z-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant flex items-center justify-center font-bold text-[12px]">MV</div>
+<div>
+<div class="text-data-tabular text-on-surface">María Vásquez</div>
+<div class="text-[11px] text-secondary">ID: 00132 • Ventas</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="4,200.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="1,500.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-primary text-data-tabular">Q 5,700.00</td>
+<td class="px-4 py-3 border-r border-outline-variant text-right text-data-tabular">202.86</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="125.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-tertiary text-data-tabular">Q 327.86</td>
+<td class="px-4 py-3 bg-surface-container-high/30 text-right font-bold text-on-surface text-data-tabular">Q 5,372.14</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-4 py-3 border-r border-outline-variant sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container z-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed-variant flex items-center justify-center font-bold text-[12px]">RL</div>
+<div>
+<div class="text-data-tabular text-on-surface">Roberto López</div>
+<div class="text-[11px] text-secondary">ID: 00145 • Logística</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="3,800.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="250.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-primary text-data-tabular">Q 4,050.00</td>
+<td class="px-4 py-3 border-r border-outline-variant text-right text-data-tabular">183.54</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-tertiary text-data-tabular">Q 183.54</td>
+<td class="px-4 py-3 bg-surface-container-high/30 text-right font-bold text-on-surface text-data-tabular">Q 3,866.46</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-4 py-3 border-r border-outline-variant sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container z-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed-variant flex items-center justify-center font-bold text-[12px]">CP</div>
+<div>
+<div class="text-data-tabular text-on-surface">Claudia Paredes</div>
+<div class="text-[11px] text-secondary">ID: 00156 • Contabilidad</div>
+</div>
+</div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="6,000.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-primary p-1 text-right text-data-tabular" type="text" value="500.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-primary text-data-tabular">Q 6,500.00</td>
+<td class="px-4 py-3 border-r border-outline-variant text-right text-data-tabular">289.80</td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="150.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant"><input class="w-full bg-transparent border-none focus:ring-1 focus:ring-tertiary p-1 text-right text-data-tabular" type="text" value="0.00"/></td>
+<td class="px-4 py-3 border-r border-outline-variant text-right font-bold text-tertiary text-data-tabular">Q 439.80</td>
+<td class="px-4 py-3 bg-surface-container-high/30 text-right font-bold text-on-surface text-data-tabular">Q 6,060.20</td>
+</tr>
+</tbody>
+<!-- Totals Footer Row -->
+<tfoot>
+<tr class="bg-surface-container-highest font-bold border-t-2 border-outline">
+<td class="px-4 py-4 border-r border-outline-variant sticky left-0 bg-surface-container-highest z-10 text-label-caps text-on-surface-variant">TOTALES GENERALES</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-data-tabular">Q 22,500.00</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-data-tabular">Q 2,500.00</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-primary text-data-tabular">Q 25,000.00</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-data-tabular">Q 1,086.75</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-data-tabular">Q 150.00</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-data-tabular">Q 125.00</td>
+<td class="px-4 py-4 border-r border-outline-variant text-right text-tertiary text-data-tabular">Q 1,361.75</td>
+<td class="px-4 py-4 bg-primary text-on-primary text-right text-data-tabular text-[16px]">Q 23,638.25</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<!-- Table Pagination/Stats Footer -->
+<div class="px-4 py-3 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<span class="text-body-sm text-on-surface-variant">Mostrando 4 de 4 empleados activos</span>
+<div class="flex items-center gap-4">
+<span class="text-body-sm text-secondary">Estado de Planilla: <span class="text-primary font-bold">ABIERTA</span></span>
+<div class="flex gap-1">
+<button class="p-1 hover:bg-surface-variant rounded transition-colors text-secondary cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-1 hover:bg-surface-variant rounded transition-colors text-secondary">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Information / Bento Widgets -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Summary Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-sm border-t-4 border-t-primary">
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+<h3 class="text-body-base font-bold text-on-surface">Carga Prestacional</h3>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">IGSS Patronal (10.67%)</span>
+<span class="font-data-tabular font-bold">Q 2,400.75</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">IRTRA (1%)</span>
+<span class="font-data-tabular font-bold">Q 225.00</span>
+</div>
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-secondary">INTECAP (1%)</span>
+<span class="font-data-tabular font-bold">Q 225.00</span>
+</div>
+<div class="pt-2 border-t border-outline-variant flex justify-between items-center font-bold">
+<span class="text-on-surface">Total Patronal</span>
+<span class="text-primary">Q 2,850.75</span>
+</div>
+</div>
+</div>
+<!-- Summary Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-5 rounded-xl shadow-sm border-t-4 border-t-tertiary">
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 bg-tertiary/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<h3 class="text-body-base font-bold text-on-surface">Alertas de Período</h3>
+</div>
+<ul class="space-y-3">
+<li class="flex gap-3 text-body-sm">
+<span class="material-symbols-outlined text-tertiary text-[18px]" data-icon="error_outline">error_outline</span>
+<span class="text-on-surface-variant">2 empleados sin cálculo de ISR este mes.</span>
+</li>
+<li class="flex gap-3 text-body-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="info">info</span>
+<span class="text-on-surface-variant">Día límite para cierre: 30 de Octubre.</span>
+</li>
+</ul>
+</div>
+<!-- Visual Context - Background Design -->
+<div class="relative overflow-hidden rounded-xl border border-outline-variant h-full min-h-[160px]">
+<img alt="Office accounting tools" class="absolute inset-0 w-full h-full object-cover" data-alt="A macro close-up of a modern calculator, a fountain pen, and professional accounting spreadsheets on a clean white desk. The lighting is soft and natural, emphasizing a high-precision, detail-oriented work environment. The color palette is composed of soft greys, white, and a hint of corporate green, creating a professional and calm atmosphere for financial management." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjonEajGC779P_M6X237VT_CBA-bjpe2r9wo5bb6sNBmmNT_z7zKF4cNQHfm-pZPPaP-Oa_sg6EeFHYIKHSH-JLj2DiWbxh5Ez3iFl6zmYBgtkcw0Ou0VA8G-Etx53vy36qPBLEE6siXLRp2k3IOxFqN54CQE-P5vuLDBnMB29SR4MUhcF7ZaMXH9eIFEex9V-RgelM_F8gJdxLGTJuYvBGo6ga1E0SgpXV9aa5V12vedV6ffujR3hGfwT2vIQnx3gmGlpkSp3EJv9"/>
+<div class="absolute inset-0 bg-primary/40 flex items-center justify-center p-6 text-center">
+<p class="text-on-primary font-bold text-h3 leading-tight drop-shadow-md">Comprometidos con la precisión financiera.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB - Only for specific screen logic -->
+<button class="fixed bottom-8 right-8 bg-primary text-on-primary w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50 md:hidden">
+<span class="material-symbols-outlined text-[32px]" data-icon="save">save</span>
+</button>
+</body></html>

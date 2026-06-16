@@ -1,0 +1,175 @@
+
+<div id="erd"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#1e3a5f' : '#E6F1FB',
+    primaryBorderColor: dark ? '#185FA5' : '#185FA5',
+    secondaryColor: dark ? '#1a3d2e' : '#E1F5EE',
+    tertiaryColor: dark ? '#2c2c2a' : '#F1EFE8',
+  },
+});
+
+const diagram = `erDiagram
+
+  EMPRESA {
+    int id_empresa PK
+    varchar nombre
+    varchar nit
+    varchar direccion
+    varchar telefono
+  }
+
+  CUENTA_BANCARIA_EMPLEADO {
+    int id_cuenta PK
+    int id_empleado FK
+    varchar banco
+    varchar numero_cuenta
+    tinyint principal
+    tinyint activa
+  }
+
+  DEPARTAMENTO {
+    int id_departamento PK
+    int id_empresa FK
+    varchar nombre
+    varchar codigo
+  }
+
+  EMPLEADO {
+    int id_empleado PK
+    int id_departamento FK
+    varchar nombre
+    varchar apellido
+    varchar cui
+    varchar nit
+    varchar puesto
+    date fecha_ingreso
+    tinyint activo
+  }
+
+  PERIODO_PAGO {
+    int id_periodo PK
+    int id_empresa FK
+    varchar mes
+    int anio
+    varchar tipo
+    date fecha_inicio
+    date fecha_fin
+    tinyint cerrado
+  }
+
+  CONCEPTO_PAGO {
+    int id_concepto PK
+    varchar codigo
+    varchar nombre
+    varchar tipo
+    varchar naturaleza
+    varchar origen
+    varchar formula
+    varchar referencia_constante
+    tinyint mostrar_en_cero
+    int orden_display
+    tinyint activo
+    date vigente_desde
+    date vigente_hasta
+  }
+
+  CONSTANTE_SISTEMA {
+    int id_constante PK
+    varchar clave
+    decimal valor
+    varchar descripcion
+    date vigente_desde
+  }
+
+  CONSTANCIA_PAGO {
+    int id_constancia PK
+    int id_empleado FK
+    int id_periodo FK
+    int id_empresa FK
+    varchar numero_constancia
+    date fecha_emision
+    varchar texto_concepto
+    tinyint anulada
+  }
+
+  DETALLE_CONSTANCIA {
+    int id_detalle PK
+    int id_constancia FK
+    int id_concepto FK
+    decimal monto
+    decimal base_calculo
+    decimal factor_aplicado
+    varchar origen_valor
+    int orden_display
+  }
+
+  RESUMEN_CONSTANCIA {
+    int id_resumen PK
+    int id_constancia FK
+    decimal total_ingresos
+    decimal total_descuentos
+    decimal liquido_recibir
+  }
+
+  RETENCION_ISR {
+    int id_retencion PK
+    int id_constancia FK
+    decimal renta_acreditada
+    decimal monto_retenido
+    int anio_fiscal
+  }
+
+  EMPRESA ||--o{ DEPARTAMENTO : tiene
+  EMPRESA ||--o{ PERIODO_PAGO : define
+  EMPRESA ||--o{ CONSTANCIA_PAGO : emite
+  DEPARTAMENTO ||--o{ EMPLEADO : agrupa
+  EMPLEADO ||--o{ CONSTANCIA_PAGO : genera
+  EMPLEADO ||--o{ CUENTA_BANCARIA_EMPLEADO : posee
+  PERIODO_PAGO ||--o{ CONSTANCIA_PAGO : enmarca
+  CONSTANCIA_PAGO ||--o{ DETALLE_CONSTANCIA : desglosa
+  CONCEPTO_PAGO ||--o{ DETALLE_CONSTANCIA : tipifica
+  CONSTANCIA_PAGO ||--|| RESUMEN_CONSTANCIA : resume
+  CONSTANCIA_PAGO ||--|| RETENCION_ISR : incluye
+  CONCEPTO_PAGO }o--o{ CONSTANTE_SISTEMA : referencia
+`;
+
+const { svg } = await mermaid.render('erd-svg', diagram);
+document.getElementById('erd').innerHTML = svg;
+
+document.querySelectorAll('#erd svg.erDiagram .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+    if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+  }
+  firstPath.replaceWith(rect);
+});
+
+document.querySelectorAll('#erd svg.erDiagram .row-rect-odd path, #erd svg.erDiagram .row-rect-even path').forEach(p => {
+  p.setAttribute('stroke', 'none');
+});
+</script>
