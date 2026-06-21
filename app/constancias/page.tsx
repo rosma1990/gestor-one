@@ -160,7 +160,13 @@ export default function Constancias() {
         if (pErr) throw pErr;
         setPeriods(pData || []);
         if (pData && pData.length > 0) {
-          setSelectedPeriodId(pData[0].id_periodo);
+          const savedPeriodId = localStorage.getItem("selected_period_id");
+          if (savedPeriodId) {
+            setSelectedPeriodId(parseInt(savedPeriodId));
+            localStorage.removeItem("selected_period_id");
+          } else {
+            setSelectedPeriodId(pData[0].id_periodo);
+          }
         }
 
         // Cargar conceptos
@@ -855,7 +861,7 @@ export default function Constancias() {
       <main className="flex-1 md:ml-64 flex flex-col min-w-0">
         {/* Top App Bar */}
         <header className="flex justify-between items-center w-full px-section-gap py-4 z-30 sticky top-0 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pl-12 md:pl-0">
             <h2 className="font-h3 text-h3 font-semibold text-on-surface">Gestión de Constancias</h2>
           </div>
           <div className="flex items-center gap-4">
@@ -889,7 +895,7 @@ export default function Constancias() {
         </header>
 
         {/* View Content */}
-        <div className="p-section-gap space-y-gutter">
+        <div className="p-4 md:p-section-gap space-y-gutter">
           {/* Filters and Actions Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
             <div className="flex flex-col md:flex-row gap-4 items-end">

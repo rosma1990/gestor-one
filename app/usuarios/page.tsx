@@ -50,10 +50,10 @@ export default function Usuarios() {
       <Sidebar activePage="usuarios" />
 
       {/* Main Canvas */}
-      <main className="md:ml-64 min-h-screen flex flex-col flex-1">
+      <main className="md:ml-64 min-h-screen flex flex-col flex-1 min-w-0">
         {/* TopAppBar */}
         <header className="flex justify-between items-center w-full px-section-gap py-component-padding-y z-30 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 border-b border-outline-variant">
-          <div className="flex items-center gap-4 flex-1">
+          <div className="flex items-center gap-4 flex-1 pl-12 md:pl-0">
             <div className="relative w-full max-w-md">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">
                 search

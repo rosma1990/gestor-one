@@ -174,7 +174,13 @@ export default function Planilla() {
         if (pErr) throw pErr;
         setPeriodos(pData || []);
         if (pData && pData.length > 0) {
-          setSelectedPeriodId(pData[0].id_periodo);
+          const savedPeriodId = localStorage.getItem("selected_period_id");
+          if (savedPeriodId) {
+            setSelectedPeriodId(parseInt(savedPeriodId));
+            localStorage.removeItem("selected_period_id");
+          } else {
+            setSelectedPeriodId(pData[0].id_periodo);
+          }
         }
 
         // Empleados activos
@@ -554,8 +560,8 @@ export default function Planilla() {
       {/* Main Content Canvas */}
       <main className="md:ml-64 pt-8 pb-12 px-section-gap flex-1 min-w-0">
         {/* Top App Bar */}
-        <header className="fixed top-0 left-64 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-section-gap py-component-padding-y">
-          <div className="flex items-center gap-4">
+        <header className="fixed top-0 left-0 md:left-64 right-0 z-30 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-section-gap py-component-padding-y">
+          <div className="flex items-center gap-4 pl-12 md:pl-0">
             <h1 className="font-h3 text-h3 font-bold text-primary">Importaciones CRESGO</h1>
             <div className="h-6 w-px bg-outline-variant hidden md:block"></div>
             <span className="font-body-base text-body-base font-medium text-secondary hidden md:block">

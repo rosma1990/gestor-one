@@ -332,10 +332,10 @@ export default function RegistroPeriodos() {
       <Sidebar activePage="registro-periodos" />
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 flex flex-col min-h-screen">
+      <main className="flex-1 md:ml-64 flex flex-col min-h-screen min-w-0">
         {/* TopAppBar */}
         <header className="flex justify-between items-center w-full px-8 py-4 z-30 sticky top-0 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pl-12 md:pl-0">
             <h1 className="text-h3 font-h3 font-bold text-primary">Importaciones CRESGO</h1>
             <div className="h-6 w-[1px] bg-outline-variant hidden md:block"></div>
             <span className="font-body-base text-body-base font-medium text-secondary hidden md:block">

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Transferencias | Importaciones CRESGO</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#0b1c30",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "secondary-container": "#d5e3fd",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "outline": "#6f7a6d",
+                        "inverse-primary": "#80da8c",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "background": "#f8f9ff",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-surface": "#213145",
+                        "tertiary-container": "#b14b64",
+                        "surface-container": "#e5eeff",
+                        "on-surface-variant": "#3f493e",
+                        "on-primary-fixed": "#002108",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface": "#f8f9ff",
+                        "on-secondary-container": "#57657b",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#3f0016",
+                        "surface-container-highest": "#d3e4fe",
+                        "error": "#ba1a1a",
+                        "tertiary": "#92334c",
+                        "surface-tint": "#046d2d",
+                        "on-tertiary-container": "#ffecee",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "primary-container": "#207d3a",
+                        "surface-container-low": "#eff4ff",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "secondary": "#515f74",
+                        "on-tertiary-fixed-variant": "#80253f",
+                        "on-primary-container": "#c3ffc5",
+                        "outline-variant": "#bfcabb",
+                        "primary": "#006327",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed": "#9bf7a5",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb1bf",
+                        "tertiary-fixed": "#ffd9de",
+                        "surface-container-high": "#dce9ff",
+                        "primary-fixed-dim": "#80da8c",
+                        "on-primary-fixed-variant": "#00531f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "section-gap": "2rem",
+                        "component-padding-x": "1rem",
+                        "component-padding-y": "0.5rem",
+                        "container-padding": "2rem",
+                        "gutter": "1.5rem"
+                    },
+                    "fontFamily": {
+                        "h1": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "h3": ["Inter"],
+                        "body-base": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h2": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h1": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active { border-right-width: 4px; }
+        .glass-panel { backdrop-filter: blur(8px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcabb; border-radius: 10px; }
+        tr:nth-child(even) { background-color: #f8faff; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Navigation Shell (SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden md:flex flex-col w-64 bg-surface-container-lowest border-r border-outline-variant shadow-sm">
+<div class="p-6">
+<h1 class="font-h2 text-h2 font-bold text-on-surface">Importaciones CRESGO</h1>
+<p class="text-on-surface-variant font-body-sm opacity-70">Sistema de Planilla</p>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-base">Planilla</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-base">Constancias</span>
+</a>
+<!-- Active Navigation Logic: Transferencias -->
+<a class="flex items-center gap-3 px-4 py-2 text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-all duration-200" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="font-body-base">Transferencias</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-body-base">Maestros</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-base">Usuarios</span>
+</a>
+</nav>
+<div class="p-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base">Ajustes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-section-gap py-component-padding-y z-30 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<span class="font-h3 text-h3 font-bold text-primary">Gestión de Transferencias</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary text-body-base w-64" placeholder="Buscar empleado..." type="text"/>
+</div>
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a financial corporate administrator for a large import company in Guatemala. The person is dressed in business attire, looking confident and smiling warmly towards the camera. The background is a clean, modern corporate office with soft natural light streaming in, maintaining the corporate green and neutral palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ0KDkIXLNnkhPFS4qNH96n3xzyNAWXREAFRTkVhK8RaiMd8n5nrXANqdRDJ0oMpWhSettb5FMuXYv___VBoazd5qH1dDL74yJLNcBmFku64jEy5t_W5jflR0Rj3NRyCLQh8fscItEEmalW1cbrLvfy76zHQ9rD1GYK44NrlNVRybvY9mT-lsXyp_WMjbLDsFEEpMWtZN7AzWYmc9X4fjO1yU0eFgSQaqaEUchngFoF0lZmE3ZAUEBpp8UzhKOTyNIPdNpel7O2jt"/>
+</div>
+</div>
+</header>
+<!-- Screen Content -->
+<div class="p-section-gap space-y-6 max-w-7xl mx-auto w-full">
+<!-- Selection Header & Filters -->
+<section class="grid grid-cols-1 lg:grid-cols-4 gap-gutter">
+<div class="lg:col-span-3 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm flex flex-wrap items-end gap-4">
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-caps text-on-surface-variant mb-2">PERÍODO DE PAGO</label>
+<select class="w-full border-outline-variant rounded-lg focus:ring-primary focus:border-primary text-body-base">
+<option>Segunda Quincena - Agosto 2024</option>
+<option>Primera Quincena - Agosto 2024</option>
+<option>Segunda Quincena - Julio 2024</option>
+</select>
+</div>
+<div class="flex-1 min-w-[200px]">
+<label class="block text-label-caps text-on-surface-variant mb-2">FILTRAR POR DEPARTAMENTO</label>
+<select class="w-full border-outline-variant rounded-lg focus:ring-primary focus:border-primary text-body-base">
+<option>Todos los Departamentos</option>
+<option>Administración</option>
+<option>Logística</option>
+<option>Ventas</option>
+</select>
+</div>
+<button class="bg-surface-container text-primary font-bold px-6 py-2 rounded-lg hover:bg-surface-container-high transition-colors flex items-center gap-2 border border-primary/20">
+<span class="material-symbols-outlined">filter_list</span>
+                        Cargar Datos
+                    </button>
+</div>
+<div class="bg-primary p-6 rounded-xl shadow-sm flex flex-col justify-between text-on-primary relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-label-caps opacity-80 uppercase tracking-widest">Total a Transferir</p>
+<h2 class="text-h1 font-h1 mt-1">Q 458,920.00</h2>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl opacity-10">account_balance</span>
+</div>
+</section>
+<div class="grid grid-cols-1 xl:grid-cols-4 gap-gutter items-start">
+<!-- Main Preview Table -->
+<div class="xl:col-span-3 space-y-4">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+<h3 class="text-h3 font-h3 text-on-surface">Vista Previa de Exportación</h3>
+<div class="flex items-center gap-2">
+<span class="text-body-sm text-on-surface-variant">Seleccionados: <strong>142 / 142</strong></span>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-highest/30 text-label-caps text-on-surface-variant border-b border-outline-variant">
+<th class="p-4 w-10 text-center">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</th>
+<th class="p-4 font-bold">Correlativo</th>
+<th class="p-4 font-bold">Nombre del Empleado</th>
+<th class="p-4 font-bold">Banco</th>
+<th class="p-4 font-bold">Tipo</th>
+<th class="p-4 font-bold">Cuenta</th>
+<th class="p-4 font-bold text-right">Monto (Líquido)</th>
+</tr>
+</thead>
+<tbody class="text-body-base divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="p-4 text-center"><input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 text-data-tabular">0001</td>
+<td class="p-4 font-medium text-on-surface">Carlos Roberto Méndez</td>
+<td class="p-4">Banco Industrial</td>
+<td class="p-4 text-on-surface-variant">Monetaria</td>
+<td class="p-4 text-data-tabular">012-456789-0</td>
+<td class="p-4 text-right font-bold text-primary">Q 12,500.00</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="p-4 text-center"><input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 text-data-tabular">0002</td>
+<td class="p-4 font-medium text-on-surface">María Elena Estrada</td>
+<td class="p-4">Banrural</td>
+<td class="p-4 text-on-surface-variant">Ahorros</td>
+<td class="p-4 text-data-tabular">3005698421</td>
+<td class="p-4 text-right font-bold text-primary">Q 8,450.00</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="p-4 text-center"><input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 text-data-tabular">0003</td>
+<td class="p-4 font-medium text-on-surface">Juan José García</td>
+<td class="p-4">Banco G&amp;T Continental</td>
+<td class="p-4 text-on-surface-variant">Monetaria</td>
+<td class="p-4 text-data-tabular">001-8854-3</td>
+<td class="p-4 text-right font-bold text-primary">Q 15,200.00</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="p-4 text-center"><input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 text-data-tabular">0004</td>
+<td class="p-4 font-medium text-on-surface">Lucía Fernanda Rodas</td>
+<td class="p-4">Banco Industrial</td>
+<td class="p-4 text-on-surface-variant">Monetaria</td>
+<td class="p-4 text-data-tabular">012-998877-2</td>
+<td class="p-4 text-right font-bold text-primary">Q 9,800.00</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="p-4 text-center"><input checked="" class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 text-data-tabular">0005</td>
+<td class="p-4 font-medium text-on-surface">Ricardo Alfaro</td>
+<td class="p-4">Banrural</td>
+<td class="p-4 text-on-surface-variant">Monetaria</td>
+<td class="p-4 text-data-tabular">4500987123</td>
+<td class="p-4 text-right font-bold text-primary">Q 7,250.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-outline-variant flex justify-center bg-surface-container-low/50">
+<nav class="flex gap-2">
+<button class="p-2 hover:bg-surface-variant rounded transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="px-3 py-1 bg-primary text-on-primary rounded">1</button>
+<button class="px-3 py-1 hover:bg-surface-variant rounded">2</button>
+<button class="px-3 py-1 hover:bg-surface-variant rounded">3</button>
+<button class="p-2 hover:bg-surface-variant rounded transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</nav>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-between items-center p-6 bg-surface-container-highest/20 rounded-xl border-2 border-dashed border-primary/30">
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">info</span>
+<p class="text-body-sm">El archivo generado cumplirá con el estándar de carga masiva definido para cada banco.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-container-lowest border border-outline text-on-surface font-semibold px-6 py-2.5 rounded-lg hover:bg-surface-container transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                                Guardar Borrador
+                            </button>
+<button class="bg-primary text-on-primary font-bold px-8 py-2.5 rounded-lg hover:opacity-90 shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">download</span>
+                                Generar Archivo CSV
+                            </button>
+</div>
+</div>
+</div>
+<!-- Sidebar: Configuration -->
+<aside class="space-y-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-6">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-4">
+<span class="material-symbols-outlined text-primary">settings_applications</span>
+<h4 class="font-h3 text-h3 text-on-surface">Configuración</h4>
+</div>
+<!-- Bank Selection -->
+<div>
+<label class="block text-label-caps text-on-surface-variant mb-2">BANCO DESTINO</label>
+<select class="w-full border-outline-variant rounded-lg focus:ring-primary focus:border-primary text-body-base">
+<option>Banco Industrial (BI-Link)</option>
+<option>Banrural (Carga Masiva)</option>
+<option>G&amp;T Continental</option>
+<option>BAC Credomatic</option>
+</select>
+</div>
+<!-- CSV Structure -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-label-caps text-on-surface-variant">ESTRUCTURA CSV</label>
+<button class="text-primary font-bold text-[10px] hover:underline">RESETEAR</button>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2 p-2 bg-surface-container rounded border border-outline-variant cursor-move">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">drag_indicator</span>
+<span class="text-body-sm font-medium">1. Correlativo</span>
+</div>
+<div class="flex items-center gap-2 p-2 bg-surface-container rounded border border-outline-variant cursor-move">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">drag_indicator</span>
+<span class="text-body-sm font-medium">2. No. de Cuenta</span>
+</div>
+<div class="flex items-center gap-2 p-2 bg-surface-container rounded border border-outline-variant cursor-move">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">drag_indicator</span>
+<span class="text-body-sm font-medium">3. Monto</span>
+</div>
+<div class="flex items-center gap-2 p-2 bg-surface-container rounded border border-outline-variant cursor-move">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">drag_indicator</span>
+<span class="text-body-sm font-medium">4. Nombre Empleado</span>
+</div>
+</div>
+</div>
+<!-- Separator & Format -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-label-caps text-on-surface-variant mb-2">SEPARADOR</label>
+<select class="w-full border-outline-variant rounded-lg text-body-sm">
+<option>Coma (,)</option>
+<option>Punto y Coma (;)</option>
+<option>Tabulador</option>
+</select>
+</div>
+<div>
+<label class="block text-label-caps text-on-surface-variant mb-2">CODIFICACIÓN</label>
+<select class="w-full border-outline-variant rounded-lg text-body-sm">
+<option>UTF-8</option>
+<option>ANSI</option>
+</select>
+</div>
+</div>
+<button class="w-full py-2 bg-surface-container text-on-surface border border-outline-variant rounded-lg font-semibold hover:bg-surface-container-high transition-colors text-body-sm">
+                            Guardar Configuración
+                        </button>
+</div>
+<!-- Helpful Tips Card -->
+<div class="bg-tertiary/5 p-6 rounded-xl border border-tertiary/20 space-y-3">
+<div class="flex items-center gap-2 text-tertiary">
+<span class="material-symbols-outlined">lightbulb</span>
+<span class="font-bold text-body-base">Sugerencia</span>
+</div>
+<p class="text-body-sm text-on-tertiary-fixed-variant leading-relaxed">
+                            Asegúrese de que el correlativo inicie en el número exacto solicitado por su portal bancario para evitar duplicidad de lotes.
+                        </p>
+</div>
+</aside>
+</div>
+</div>
+<!-- Footer Spacer -->
+<footer class="mt-auto py-8 text-center text-on-surface-variant/40 text-body-sm">
+            © 2024 Importaciones CRESGO - Sistema de Gestión de Planilla v4.2.1
+        </footer>
+</main>
+<script>
+        // Simple micro-interaction for checkboxes and row highlighting
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (row) {
+                    if (this.checked) {
+                        row.classList.remove('opacity-50');
+                    } else {
+                        row.classList.add('opacity-50');
+                    }
+                }
+            });
+        });
+
+        // Search Bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('scale-105');
+            searchInput.parentElement.classList.add('transition-transform');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('scale-105');
+        });
+    </script>
+</body></html>
