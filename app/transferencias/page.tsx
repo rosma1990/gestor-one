@@ -57,17 +57,6 @@ export default function TransferenciasPage() {
   // DB Banks Configuration state
   const [bancosDb, setBancosDb] = useState<any[]>([]);
 
-  // Configuration state (Sidebar UI)
-  const [selectedBank, setSelectedBank] = useState("Banco Industrial (BI-Link)");
-  const [csvSeparator, setCsvSeparator] = useState("Coma (,)");
-  const [csvEncoding, setCsvEncoding] = useState("UTF-8");
-  const [csvFields, setCsvFields] = useState<CsvField[]>([
-    { id: "correlativo", label: "1. Correlativo" },
-    { id: "cuenta", label: "2. No. de Cuenta" },
-    { id: "monto", label: "3. Monto" },
-    { id: "nombre", label: "4. Nombre Empleado" },
-  ]);
-
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -112,34 +101,6 @@ export default function TransferenciasPage() {
         
         const dbBanks = bData || [];
         setBancosDb(dbBanks);
-
-        // Load saved configuration from localStorage or DB
-        const savedConfig = localStorage.getItem("transferencias_config");
-        if (savedConfig) {
-          try {
-            const parsed = JSON.parse(savedConfig);
-            if (parsed.selectedBank) setSelectedBank(parsed.selectedBank);
-            if (parsed.csvSeparator) setCsvSeparator(parsed.csvSeparator);
-            if (parsed.csvEncoding) setCsvEncoding(parsed.csvEncoding);
-            if (parsed.csvFields) setCsvFields(parsed.csvFields);
-          } catch (e) {
-            console.error("Error parsing saved configuration", e);
-          }
-        } else if (dbBanks.length > 0) {
-          // Fallback: load default settings for BI from Supabase if no local storage
-          const biBank = dbBanks.find(b => b.nombre.toLowerCase().includes("industrial") || (b.codigo || "").toUpperCase() === "BI");
-          if (biBank) {
-            setSelectedBank(biBank.nombre);
-            if (biBank.separador) setCsvSeparator(biBank.separador);
-            if (biBank.codificacion) setCsvEncoding(biBank.codificacion);
-            if (Array.isArray(biBank.mapeo_campos) && biBank.mapeo_campos.length > 0) {
-              setCsvFields(biBank.mapeo_campos.map((f: any, idx: number) => ({
-                id: f.db_field,
-                label: `${idx + 1}. ${f.csv_name}`
-              })));
-            }
-          }
-        }
       } catch (err: any) {
         console.error("Error loading initial data:", err);
         setStatusMessage({ type: "error", text: "Error al conectar con la base de datos: " + err.message });
@@ -289,49 +250,7 @@ export default function TransferenciasPage() {
     });
   };
 
-  // Reorder fields logic
-  const moveField = (index: number, direction: number) => {
-    const newIndex = index + direction;
-    if (newIndex < 0 || newIndex >= csvFields.length) return;
-    const newFields = [...csvFields];
-    const temp = newFields[index];
-    newFields[index] = newFields[newIndex];
-    newFields[newIndex] = temp;
-
-    // Update numbers in the labels dynamically
-    const updated = newFields.map((f, idx) => {
-      const parts = f.label.split(". ");
-      const labelText = parts.length > 1 ? parts[1] : f.label;
-      return {
-        ...f,
-        label: `${idx + 1}. ${labelText}`
-      };
-    });
-    setCsvFields(updated);
-  };
-
-  // Reset fields to default order
-  const handleResetFields = () => {
-    // Find matching bank configuration in Supabase to restore it
-    const matchedBank = getMatchedBankConfig(selectedBank);
-    if (matchedBank && Array.isArray(matchedBank.mapeo_campos) && matchedBank.mapeo_campos.length > 0) {
-      setCsvFields(matchedBank.mapeo_campos.map((f: any, idx: number) => ({
-        id: f.db_field,
-        label: `${idx + 1}. ${f.csv_name}`
-      })));
-      if (matchedBank.separador) setCsvSeparator(matchedBank.separador);
-      if (matchedBank.codificacion) setCsvEncoding(matchedBank.codificacion);
-    } else {
-      setCsvFields([
-        { id: "correlativo", label: "1. Correlativo" },
-        { id: "cuenta", label: "2. No. de Cuenta" },
-        { id: "monto", label: "3. Monto" },
-        { id: "nombre", label: "4. Nombre Empleado" },
-      ]);
-    }
-  };
-
-  // Match the dropdown selection string with a Supabase database row
+  // Match the bank name string with a Supabase database row
   const getMatchedBankConfig = (bankName: string) => {
     if (bancosDb.length === 0) return null;
     return bancosDb.find(b => {
@@ -342,36 +261,7 @@ export default function TransferenciasPage() {
     }) || null;
   };
 
-  // Update layout settings when selecting a bank in dropdown
-  const handleBankChange = (bankName: string) => {
-    setSelectedBank(bankName);
-    const matchedBank = getMatchedBankConfig(bankName);
-    if (matchedBank) {
-      if (matchedBank.separador) setCsvSeparator(matchedBank.separador);
-      if (matchedBank.codificacion) setCsvEncoding(matchedBank.codificacion);
-      if (Array.isArray(matchedBank.mapeo_campos) && matchedBank.mapeo_campos.length > 0) {
-        setCsvFields(matchedBank.mapeo_campos.map((f: any, idx: number) => ({
-          id: f.db_field,
-          label: `${idx + 1}. ${f.csv_name}`
-        })));
-      }
-    }
-  };
-
-  // Save current config to localStorage
-  const handleSaveConfig = () => {
-    const config = {
-      selectedBank,
-      csvSeparator,
-      csvEncoding,
-      csvFields
-    };
-    localStorage.setItem("transferencias_config", JSON.stringify(config));
-    setStatusMessage({ type: "success", text: "¡Configuración guardada correctamente en el navegador!" });
-    setTimeout(() => setStatusMessage(null), 4000);
-  };
-
-  // Generate and download CSV
+  // Generate and download CSV grouped by bank
   const handleGenerateCsv = () => {
     const selectedRows = transferData.filter(r => selectedItems.has(r.id_empleado));
     if (selectedRows.length === 0) {
@@ -379,128 +269,165 @@ export default function TransferenciasPage() {
       return;
     }
 
-    const matchedBank = getMatchedBankConfig(selectedBank);
-
-    // Apply Bank Preference Account Format validation if configured
-    if (matchedBank?.preferencias?.validar_cuenta) {
-      const invalidAccounts = selectedRows.filter(r => !/^\d+$/.test(r.numeroCuenta));
-      if (invalidAccounts.length > 0) {
-        setStatusMessage({
-          type: "error",
-          text: `Error: Empleados (${invalidAccounts.map(i => i.nombreCompleto).join(", ")}) tienen números de cuenta no válidos.`
-        });
-        return;
+    // Group selected rows by bank name
+    const grouped = new Map<string, TransferRow[]>();
+    selectedRows.forEach(row => {
+      const bankName = row.banco || "Sin Registrar";
+      if (!grouped.has(bankName)) {
+        grouped.set(bankName, []);
       }
-    }
+      grouped.get(bankName)!.push(row);
+    });
 
-    // Determine separator character
-    let separator = ",";
-    if (csvSeparator.includes("Punto")) separator = ";";
-    else if (csvSeparator.includes("Tabulador")) separator = "\t";
+    let filesGenerated = 0;
 
-    const isBI = matchedBank?.codigo?.toUpperCase().trim() === "BI" || 
-                 selectedBank.toLowerCase().includes("industrial") || 
-                 selectedBank.toLowerCase().includes("bi-link");
+    grouped.forEach((rows, bankName) => {
+      const matchedBank = getMatchedBankConfig(bankName);
 
-    // Build header row based on current field order (using label without index prefix)
-    const headerRow = csvFields.map(f => {
-      const parts = f.label.split(". ");
-      return parts.length > 1 ? parts[1] : f.label;
-    }).join(separator);
+      // Apply Bank Preference Account Format validation if configured
+      if (matchedBank?.preferencias?.validar_cuenta) {
+        const invalidAccounts = rows.filter(r => !/^\d+$/.test(r.numeroCuenta));
+        if (invalidAccounts.length > 0) {
+          setStatusMessage({
+            type: "error",
+            text: `Error: Empleados en ${bankName} (${invalidAccounts.map(i => i.nombreCompleto).join(", ")}) tienen números de cuenta no válidos.`
+          });
+          return;
+        }
+      }
 
-    // Build data rows
-    const dataRows = selectedRows.map((r, index) => {
-      return csvFields.map(f => {
-        const fieldId = f.id;
+      // Determine separator character
+      let separator = ",";
+      const bankSeparator = matchedBank?.separador || "Coma (,)";
+      if (bankSeparator.includes("Punto")) separator = ";";
+      else if (bankSeparator.includes("Tabulador")) separator = "\t";
 
-        // Resolve mapped database field values
-        if (fieldId === "correlativo" || fieldId === "Auto-incremental") {
-          return (index + 1).toString().padStart(4, "0");
-        }
-        if (fieldId === "cuenta" || fieldId === "Número de Cuenta") {
-          return `"${r.numeroCuenta}"`; // Quote accounts to prevent scientific notation in Excel
-        }
-        if (fieldId === "monto" || fieldId === "Sueldo Líquido") {
-          return r.liquido.toFixed(2);
-        }
-        if (fieldId === "nombre" || fieldId === "Nombre Completo") {
-          return `"${r.nombreCompleto}"`;
-        }
-        if (fieldId === "Primer Nombre") {
-          return `"${r.nombreCompleto.split(" ")[0]}"`;
-        }
-        if (fieldId === "Primer Apellido") {
-          const parts = r.nombreCompleto.split(" ");
-          const apellido = parts.length > 2 ? parts[2] : (parts[1] || "");
-          return `"${apellido}"`;
-        }
-        if (fieldId === "Tipo de Cuenta") {
-          // Special mapping rule: monetario -> 1, ahorro -> 2 ONLY for Banco Industrial
-          if (isBI) {
-            return r.tipoCuentaRaw === "monetario" ? "1" : "2";
-          }
-          return r.tipoCuentaRaw === "monetario" ? "Monetaria" : "Ahorros";
-        }
-        if (fieldId === "Moneda") {
-          return "GTQ";
-        }
-        if (fieldId === "Banco") {
-          return `"${r.banco}"`;
-        }
-        if (fieldId === "DPI") {
-          return `"${r.dpi}"`;
-        }
-        if (fieldId === "NIT") {
-          return `"${r.nit}"`;
-        }
-        if (fieldId === "Sueldo Base") {
-          return r.sueldoBase.toFixed(2);
-        }
-        if (fieldId === "Bonificación Ley") {
-          return "250.00";
-        }
-        if (fieldId === "Comentario Período") {
-          return `"${r.comentarioPeriodo}"`;
-        }
-        if (fieldId === "Fecha de Pago") {
-          return `"${r.fechaPago}"`;
-        }
-        if (fieldId === "Nombre Empresa") {
-          return `"${r.nombreEmpresa}"`;
-        }
+      const isBI = matchedBank?.codigo?.toUpperCase().trim() === "BI" || 
+                   bankName.toLowerCase().includes("industrial") || 
+                   bankName.toLowerCase().includes("bi-link");
 
-        return "";
+      // Load fields mapping from database, or fallback to default
+      let activeFields: CsvField[] = [
+        { id: "correlativo", label: "1. Correlativo" },
+        { id: "cuenta", label: "2. No. de Cuenta" },
+        { id: "monto", label: "3. Monto" },
+        { id: "nombre", label: "4. Nombre Empleado" },
+      ];
+
+      if (matchedBank && Array.isArray(matchedBank.mapeo_campos) && matchedBank.mapeo_campos.length > 0) {
+        activeFields = matchedBank.mapeo_campos.map((f: any, idx: number) => ({
+          id: f.db_field,
+          label: `${idx + 1}. ${f.csv_name}`
+        }));
+      }
+
+      // Build header row based on field order (using label without index prefix)
+      const headerRow = activeFields.map(f => {
+        const parts = f.label.split(". ");
+        return parts.length > 1 ? parts[1] : f.label;
       }).join(separator);
+
+      // Build data rows
+      const dataRows = rows.map((r, index) => {
+        return activeFields.map(f => {
+          const fieldId = f.id;
+
+          // Resolve mapped database field values
+          if (fieldId === "correlativo" || fieldId === "Auto-incremental") {
+            return (index + 1).toString().padStart(4, "0");
+          }
+          if (fieldId === "cuenta" || fieldId === "Número de Cuenta") {
+            return `"${r.numeroCuenta}"`; // Quote accounts to prevent scientific notation in Excel
+          }
+          if (fieldId === "monto" || fieldId === "Sueldo Líquido") {
+            return r.liquido.toFixed(2);
+          }
+          if (fieldId === "nombre" || fieldId === "Nombre Completo") {
+            return `"${r.nombreCompleto}"`;
+          }
+          if (fieldId === "Primer Nombre") {
+            return `"${r.nombreCompleto.split(" ")[0]}"`;
+          }
+          if (fieldId === "Primer Apellido") {
+            const parts = r.nombreCompleto.split(" ");
+            const apellido = parts.length > 2 ? parts[2] : (parts[1] || "");
+            return `"${apellido}"`;
+          }
+          if (fieldId === "Tipo de Cuenta") {
+            // Special mapping rule: monetario -> 1, ahorro -> 2 ONLY for Banco Industrial
+            if (isBI) {
+              return r.tipoCuentaRaw === "monetario" ? "1" : "2";
+            }
+            return r.tipoCuentaRaw === "monetario" ? "Monetaria" : "Ahorros";
+          }
+          if (fieldId === "Moneda") {
+            return "GTQ";
+          }
+          if (fieldId === "Banco") {
+            return `"${r.banco}"`;
+          }
+          if (fieldId === "DPI") {
+            return `"${r.dpi}"`;
+          }
+          if (fieldId === "NIT") {
+            return `"${r.nit}"`;
+          }
+          if (fieldId === "Sueldo Base") {
+            return r.sueldoBase.toFixed(2);
+          }
+          if (fieldId === "Bonificación Ley") {
+            return "250.00";
+          }
+          if (fieldId === "Comentario Período") {
+            return `"${r.comentarioPeriodo}"`;
+          }
+          if (fieldId === "Fecha de Pago") {
+            return `"${r.fechaPago}"`;
+          }
+          if (fieldId === "Nombre Empresa") {
+            return `"${r.nombreEmpresa}"`;
+          }
+
+          return "";
+        }).join(separator);
+      });
+
+      const includeHeaders = matchedBank ? matchedBank.incluye_encabezados : true;
+      const eol = matchedBank?.preferencias?.tipo_eol === "Unix / Linux (LF)" ? "\n" : "\r\n";
+      const csvContent = (includeHeaders ? [headerRow, ...dataRows] : dataRows).join(eol);
+      
+      const encoding = matchedBank?.codificacion || "UTF-8";
+      
+      // Add UTF-8 BOM if UTF-8 is selected (so Excel opens accented chars correctly)
+      const blobContent = encoding === "UTF-8" ? ["\uFEFF", csvContent] : [csvContent];
+      const blob = new Blob(blobContent, { type: `text/csv;charset=${encoding.toLowerCase()};` });
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      
+      // Format file name based on bank preferences
+      const period = periods.find(p => p.id_periodo === selectedPeriodId);
+      const bankNameClean = bankName.split(" (")[0].replace(/\s+/g, "_");
+      const periodName = period ? `${period.mes}_${period.anio}` : "periodo";
+      const prefijo = matchedBank?.preferencias?.prefijo || "Transferencias";
+      
+      link.href = url;
+      link.setAttribute("download", `${prefijo}_${bankNameClean}_${periodName}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      filesGenerated++;
     });
 
-    const includeHeaders = matchedBank ? matchedBank.incluye_encabezados : true;
-    const eol = matchedBank?.preferencias?.tipo_eol === "Unix / Linux (LF)" ? "\n" : "\r\n";
-    const csvContent = (includeHeaders ? [headerRow, ...dataRows] : dataRows).join(eol);
-    
-    // Add UTF-8 BOM if UTF-8 is selected (so Excel opens accented chars correctly)
-    const blobContent = csvEncoding === "UTF-8" ? ["\uFEFF", csvContent] : [csvContent];
-    const blob = new Blob(blobContent, { type: `text/csv;charset=${csvEncoding.toLowerCase()};` });
-    
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    
-    // Format file name based on bank preferences
-    const period = periods.find(p => p.id_periodo === selectedPeriodId);
-    const bankNameClean = selectedBank.split(" (")[0].replace(/\s+/g, "_");
-    const periodName = period ? `${period.mes}_${period.anio}` : "periodo";
-    const prefijo = matchedBank?.preferencias?.prefijo || "Transferencias";
-    
-    link.href = url;
-    link.setAttribute("download", `${prefijo}_${bankNameClean}_${periodName}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setStatusMessage({ 
-      type: "success", 
-      text: `¡Archivo CSV generado con éxito para ${selectedBank}! (${selectedRows.length} registros exportados)` 
-    });
-    setTimeout(() => setStatusMessage(null), 5000);
+    if (filesGenerated > 0) {
+      setStatusMessage({ 
+        type: "success", 
+        text: `¡Se generaron con éxito ${filesGenerated} archivos CSV! (${selectedRows.length} registros exportados en total)` 
+      });
+      setTimeout(() => setStatusMessage(null), 5000);
+    }
   };
 
   // Filter transfers based on search, department, and selected bank accounts if necessary
@@ -568,15 +495,19 @@ export default function TransferenciasPage() {
               </div>
             )}
 
-            <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
-              <span className="material-symbols-outlined text-primary">notifications</span>
-            </button>
-            <div className="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs overflow-hidden border border-outline-variant">
-              <img 
-                className="w-full h-full object-cover" 
-                alt="User profile" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ0KDkIXLNnkhPFS4qNH96n3xzyNAWXREAFRTkVhK8RaiMd8n5nrXANqdRDJ0oMpWhSettb5FMuXYv___VBoazd5qH1dDL74yJLNcBmFku64jEy5t_W5jflR0Rj3NRyCLQh8fscItEEmalW1cbrLvfy76zHQ9rD1GYK44NrlNVRybvY9mT-lsXyp_WMjbLDsFEEpMWtZN7AzWYmc9X4fjO1yU0eFgSQaqaEUchngFoF0lZmE3ZAUEBpp8UzhKOTyNIPdNpel7O2jt"
-              />
+
+            <div className="flex items-center gap-3">
+              <span className="text-right hidden sm:block">
+                <p className="font-body-base font-bold text-on-surface">Admin CRESGO</p>
+                <p className="text-[10px] tracking-wider text-on-surface-variant/80 uppercase font-semibold">SUPERUSER</p>
+              </span>
+              <div className="w-10 h-10 rounded-2xl border border-outline-variant overflow-hidden flex items-center justify-center bg-primary-container">
+                <img 
+                  className="w-full h-full object-cover" 
+                  alt="User profile" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ0KDkIXLNnkhPFS4qNH96n3xzyNAWXREAFRTkVhK8RaiMd8n5nrXANqdRDJ0oMpWhSettb5FMuXYv___VBoazd5qH1dDL74yJLNcBmFku64jEy5t_W5jflR0Rj3NRyCLQh8fscItEEmalW1cbrLvfy76zHQ9rD1GYK44NrlNVRybvY9mT-lsXyp_WMjbLDsFEEpMWtZN7AzWYmc9X4fjO1yU0eFgSQaqaEUchngFoF0lZmE3ZAUEBpp8UzhKOTyNIPdNpel7O2jt"
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -622,13 +553,7 @@ export default function TransferenciasPage() {
                   <span className="material-symbols-outlined absolute right-3 top-2.5 text-secondary pointer-events-none">expand_more</span>
                 </div>
               </div>
-              <button 
-                onClick={() => selectedPeriodId && loadTransferDetails(selectedPeriodId)}
-                className="bg-surface-container text-primary font-bold px-6 py-2 rounded-lg hover:bg-surface-container-high transition-colors flex items-center gap-2 border border-primary/20 cursor-pointer"
-              >
-                <span className="material-symbols-outlined">filter_list</span>
-                Cargar Datos
-              </button>
+
             </div>
             
             {/* Big Total Card */}
@@ -643,11 +568,11 @@ export default function TransferenciasPage() {
             </div>
           </section>
 
-          {/* Main Grid: Table & Config */}
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-gutter items-start">
+          {/* Main Content: Export Preview Table */}
+          <div className="w-full space-y-4">
             
-            {/* Left side: Export Preview Table */}
-            <div className="xl:col-span-3 space-y-4">
+            {/* Export Preview Table */}
+            <div className="space-y-4">
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden border-t-4 border-t-primary">
                 
                 {/* Table Header */}
@@ -777,13 +702,6 @@ export default function TransferenciasPage() {
                 </div>
                 <div className="flex gap-4 w-full sm:w-auto justify-end">
                   <button 
-                    onClick={handleSaveConfig}
-                    className="bg-surface-container-lowest border border-outline text-on-surface font-semibold px-6 py-2.5 rounded-lg hover:bg-surface-container transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined">save</span>
-                    Guardar Borrador
-                  </button>
-                  <button 
                     onClick={handleGenerateCsv}
                     className="bg-primary text-on-primary font-bold px-8 py-2.5 rounded-lg hover:opacity-90 shadow-lg shadow-primary/20 transition-all flex items-center gap-2 cursor-pointer"
                   >
@@ -793,140 +711,6 @@ export default function TransferenciasPage() {
                 </div>
               </div>
             </div>
-
-            {/* Right side: Configuration Sidebar */}
-            <aside className="space-y-6">
-              <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-6 border-t-4 border-t-primary">
-                <div className="flex items-center gap-2 border-b border-outline-variant pb-4">
-                  <span className="material-symbols-outlined text-primary">settings_applications</span>
-                  <h4 className="font-h3 text-h3 text-on-surface">Configuración</h4>
-                </div>
-                
-                {/* Bank Selection */}
-                <div>
-                  <label className="block text-label-caps text-on-surface-variant mb-2 font-semibold">BANCO DESTINO</label>
-                  <div className="relative">
-                    <select 
-                      className="w-full border border-outline-variant rounded-lg focus:ring-primary focus:border-primary text-body-base appearance-none py-2 px-3 pr-10 bg-transparent"
-                      value={selectedBank}
-                      onChange={(e) => handleBankChange(e.target.value)}
-                    >
-                      {bancosDb.length > 0 ? (
-                        bancosDb.map(b => (
-                          <option key={b.id_banco} value={b.nombre}>
-                            {b.nombre} {b.codigo ? `(${b.codigo})` : ""}
-                          </option>
-                        ))
-                      ) : (
-                        <>
-                          <option>Banco Industrial (BI-Link)</option>
-                          <option>Banrural (Carga Masiva)</option>
-                          <option>G&amp;T Continental</option>
-                          <option>BAC Credomatic</option>
-                        </>
-                      )}
-                    </select>
-                    <span className="material-symbols-outlined absolute right-3 top-2.5 text-secondary pointer-events-none">expand_more</span>
-                  </div>
-                </div>
-
-                {/* CSV Structure Order */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <label className="text-label-caps text-on-surface-variant font-semibold">ESTRUCTURA CSV</label>
-                    <button 
-                      onClick={handleResetFields}
-                      className="text-primary font-bold text-[10px] hover:underline cursor-pointer"
-                    >
-                      RESETEAR
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {csvFields.map((field, idx) => (
-                      <div 
-                        key={field.id} 
-                        className="flex items-center justify-between p-2.5 bg-surface-container rounded border border-outline-variant shadow-sm hover:shadow transition-shadow"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">drag_indicator</span>
-                          <span className="text-body-sm font-semibold text-on-surface">{field.label}</span>
-                        </div>
-                        <div className="flex gap-1.5">
-                          <button 
-                            disabled={idx === 0} 
-                            onClick={() => moveField(idx, -1)} 
-                            className="hover:text-primary disabled:opacity-20 cursor-pointer text-secondary flex items-center"
-                            title="Subir"
-                          >
-                            <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
-                          </button>
-                          <button 
-                            disabled={idx === csvFields.length - 1} 
-                            onClick={() => moveField(idx, 1)} 
-                            className="hover:text-primary disabled:opacity-20 cursor-pointer text-secondary flex items-center"
-                            title="Bajar"
-                          >
-                            <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Separator & Format Options */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-label-caps text-on-surface-variant mb-2 font-semibold">SEPARADOR</label>
-                    <div className="relative">
-                      <select 
-                        className="w-full border border-outline-variant rounded-lg text-body-sm appearance-none py-2 px-2.5 bg-transparent"
-                        value={csvSeparator}
-                        onChange={(e) => setCsvSeparator(e.target.value)}
-                      >
-                        <option>Coma (,)</option>
-                        <option>Punto y Coma (;)</option>
-                        <option>Tabulador (\t)</option>
-                      </select>
-                      <span className="material-symbols-outlined absolute right-2 top-2.5 text-secondary pointer-events-none text-sm">expand_more</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-label-caps text-on-surface-variant mb-2 font-semibold font-sans">CODIFICACIÓN</label>
-                    <div className="relative">
-                      <select 
-                        className="w-full border border-outline-variant rounded-lg text-body-sm appearance-none py-2 px-2.5 bg-transparent"
-                        value={csvEncoding}
-                        onChange={(e) => setCsvEncoding(e.target.value)}
-                      >
-                        <option>UTF-8</option>
-                        <option>ANSI</option>
-                      </select>
-                      <span className="material-symbols-outlined absolute right-2 top-2.5 text-secondary pointer-events-none text-sm">expand_more</span>
-                    </div>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={handleSaveConfig}
-                  className="w-full py-2 bg-surface-container text-on-surface border border-outline-variant rounded-lg font-semibold hover:bg-surface-container-high transition-colors text-body-sm cursor-pointer"
-                >
-                  Guardar Configuración
-                </button>
-              </div>
-
-              {/* Tips Card */}
-              <div className="bg-tertiary/5 p-6 rounded-xl border border-tertiary/20 space-y-3">
-                <div className="flex items-center gap-2 text-tertiary">
-                  <span className="material-symbols-outlined">lightbulb</span>
-                  <span className="font-bold text-body-base">Sugerencia</span>
-                </div>
-                <p className="text-body-sm text-on-tertiary-fixed-variant leading-relaxed">
-                  Asegúrese de que el correlativo inicie en el número exacto solicitado por su portal bancario para evitar duplicidad de lotes.
-                </p>
-              </div>
-            </aside>
-            
           </div>
         </div>
 

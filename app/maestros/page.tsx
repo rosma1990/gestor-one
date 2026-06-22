@@ -138,22 +138,17 @@ export default function MaestrosDashboard() {
             <span className="font-h3 text-h3 font-bold text-primary">Catálogos Maestros</span>
           </div>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors relative">
-                <span className="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
-              </button>
-              <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
-                <span className="material-symbols-outlined text-primary" data-icon="help">help</span>
-              </button>
-            </div>
-            <div className="h-8 w-[1px] bg-outline-variant mx-2"></div>
             <div className="flex items-center gap-3 pl-2">
               <span className="text-right hidden sm:block">
                 <p className="font-body-base font-bold text-on-surface">Admin CRESGO</p>
-                <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Administrador</p>
+                <p className="text-[10px] tracking-wider text-on-surface-variant/80 uppercase font-semibold">SUPERUSER</p>
               </span>
-              <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-sm border border-outline-variant">
-                AD
+              <div className="w-10 h-10 rounded-2xl border border-outline-variant overflow-hidden flex items-center justify-center bg-primary-container">
+                <img 
+                  className="w-full h-full object-cover" 
+                  alt="User profile" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ0KDkIXLNnkhPFS4qNH96n3xzyNAWXREAFRTkVhK8RaiMd8n5nrXANqdRDJ0oMpWhSettb5FMuXYv___VBoazd5qH1dDL74yJLNcBmFku64jEy5t_W5jflR0Rj3NRyCLQh8fscItEEmalW1cbrLvfy76zHQ9rD1GYK44NrlNVRybvY9mT-lsXyp_WMjbLDsFEEpMWtZN7AzWYmc9X4fjO1yU0eFgSQaqaEUchngFoF0lZmE3ZAUEBpp8UzhKOTyNIPdNpel7O2jt"
+                />
               </div>
             </div>
           </div>

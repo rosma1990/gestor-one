@@ -644,11 +644,6 @@ export default function SignaturePage() {
             <p className="text-body-sm text-on-surface-variant leading-none">Constancia de Pago</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors flex items-center justify-center">
-            <span className="material-symbols-outlined text-on-secondary-container">help</span>
-          </button>
-        </div>
       </header>
 
       {/* Main Container */}

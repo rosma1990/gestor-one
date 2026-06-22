@@ -534,25 +534,17 @@ export default function BancosCRUD() {
               />
             </div>
             
-            <div className="flex items-center gap-2">
-              <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors relative">
-                <span className="material-symbols-outlined text-on-secondary-container">notifications</span>
-                <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
-              </button>
-              <button className="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
-                <span className="material-symbols-outlined text-on-secondary-container">help</span>
-              </button>
-            </div>
-            
-            <div className="h-8 w-[1px] bg-outline-variant mx-2"></div>
-            
             <div className="flex items-center gap-3">
               <div className="text-right hidden lg:block">
-                <p className="text-body-sm font-bold leading-none">Admin CRESGO</p>
-                <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Superuser</p>
+                <p className="font-body-base font-bold text-on-surface">Admin CRESGO</p>
+                <p className="text-[10px] tracking-wider text-on-surface-variant/80 uppercase font-semibold">SUPERUSER</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
-                AD
+              <div className="w-10 h-10 rounded-2xl border border-outline-variant overflow-hidden flex items-center justify-center bg-primary-container">
+                <img 
+                  className="w-full h-full object-cover" 
+                  alt="User profile" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJ0KDkIXLNnkhPFS4qNH96n3xzyNAWXREAFRTkVhK8RaiMd8n5nrXANqdRDJ0oMpWhSettb5FMuXYv___VBoazd5qH1dDL74yJLNcBmFku64jEy5t_W5jflR0Rj3NRyCLQh8fscItEEmalW1cbrLvfy76zHQ9rD1GYK44NrlNVRybvY9mT-lsXyp_WMjbLDsFEEpMWtZN7AzWYmc9X4fjO1yU0eFgSQaqaEUchngFoF0lZmE3ZAUEBpp8UzhKOTyNIPdNpel7O2jt"
+                />
               </div>
             </div>
           </div>
