@@ -1,0 +1,548 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Importaciones CRESGO - Catálogo de Bancos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#ffb1bf",
+                    "surface-bright": "#f8f9ff",
+                    "on-secondary-container": "#57657b",
+                    "on-primary-container": "#c3ffc5",
+                    "tertiary-container": "#b14b64",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-container": "#d5e3fd",
+                    "primary-container": "#207d3a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffd9de",
+                    "surface-tint": "#046d2d",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed": "#002108",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary-fixed-dim": "#80da8c",
+                    "surface-container-high": "#dce9ff",
+                    "background": "#f8f9ff",
+                    "outline": "#6f7a6d",
+                    "surface": "#f8f9ff",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "primary": "#006327",
+                    "on-surface": "#0b1c30",
+                    "outline-variant": "#bfcabb",
+                    "on-error-container": "#93000a",
+                    "inverse-primary": "#80da8c",
+                    "tertiary": "#92334c",
+                    "on-tertiary-fixed-variant": "#80253f",
+                    "inverse-surface": "#213145",
+                    "surface-container": "#e5eeff",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#9bf7a5",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#3f0016",
+                    "on-primary-fixed-variant": "#00531f",
+                    "on-background": "#0b1c30",
+                    "surface-container-highest": "#d3e4fe",
+                    "secondary-fixed": "#d5e3fd",
+                    "on-tertiary-container": "#ffecee",
+                    "on-surface-variant": "#3f493e",
+                    "error-container": "#ffdad6",
+                    "secondary": "#515f74"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "component-padding-y": "0.5rem",
+                    "component-padding-x": "1rem",
+                    "section-gap": "2rem",
+                    "gutter": "1.5rem",
+                    "container-padding": "2rem"
+            },
+            "fontFamily": {
+                    "h3": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "h1": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-base": ["Inter"]
+            },
+            "fontSize": {
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "h1": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        .active-tab {
+            font-variation-settings: 'FILL' 1;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfcabb; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Side Navigation Shell -->
+<aside class="fixed left-0 top-0 h-full z-40 hidden md:flex flex-col w-64 bg-surface-container-lowest dark:bg-inverse-surface border-r border-outline-variant shadow-sm">
+<div class="p-6">
+<h1 class="font-h2 text-h2 font-bold text-on-surface dark:text-inverse-on-surface">Importaciones CRESGO</h1>
+<p class="text-body-sm text-on-surface-variant opacity-70">Sistema de Planilla</p>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-body-base">Dashboard</span>
+</a>
+<!-- Planilla -->
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">payments</span>
+<span class="font-body-base">Planilla</span>
+</a>
+<!-- Constancias -->
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">description</span>
+<span class="font-body-base">Constancias</span>
+</a>
+<!-- Transferencias -->
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">account_balance</span>
+<span class="font-body-base">Transferencias</span>
+</a>
+<!-- Maestros (Active) -->
+<div class="space-y-1">
+<button class="flex items-center justify-between w-full px-4 py-2 text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-all duration-200">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined active-tab">database</span>
+<span class="font-body-base">Maestros</span>
+</div>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="pl-12 space-y-1 py-1 border-l ml-6 border-outline-variant">
+<a class="block py-1.5 text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Empresas</a>
+<a class="block py-1.5 text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Departamentos</a>
+<a class="block py-1.5 text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Empleados</a>
+<a class="block py-1.5 text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Conceptos Pago</a>
+<a class="block py-1.5 text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Periodos Pago</a>
+<a class="block py-1.5 text-body-sm text-primary font-semibold" href="#">Bancos</a>
+</div>
+</div>
+<!-- Usuarios -->
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">group</span>
+<span class="font-body-base">Usuarios</span>
+</a>
+</nav>
+<div class="p-3 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base">Ajustes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error hover:bg-error-container/20 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-base">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-section-gap py-component-padding-y z-30 bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 hover:bg-surface-variant rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-h3 font-h3 font-bold text-primary">Catálogo de Bancos</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant opacity-60">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-body-sm focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Buscar banco..." type="text">
+</div>
+<div class="flex items-center gap-2">
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors relative">
+<span class="material-symbols-outlined text-on-secondary-container">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hover:bg-surface-variant/50 rounded-full p-2 transition-colors">
+<span class="material-symbols-outlined text-on-secondary-container">help</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden lg:block">
+<p class="text-body-sm font-bold leading-none">Admin CRESGO</p>
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant">Superuser</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                        AD
+                    </div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 overflow-y-auto max-h-[calc(100vh-64px)]">
+<!-- Left: Bank List -->
+<div class="lg:col-span-7 space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-h2 text-h2 text-on-surface font-bold">Bancos Registrados</h1>
+<p class="text-body-base text-on-surface-variant">Gestione las instituciones bancarias autorizadas para transferencias de nómina.</p>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-on-primary px-6 py-2.5 rounded-lg font-bold flex items-center gap-2 shadow-sm transition-transform active:scale-95">
+<span class="material-symbols-outlined">add</span>
+                        Agregar Banco
+                    </button>
+</div>
+<!-- List Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-6 py-4 text-label-caps text-on-surface-variant uppercase tracking-widest">Institución</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant uppercase tracking-widest text-center">Estado</th>
+<th class="px-6 py-4 text-label-caps text-on-surface-variant uppercase tracking-widest text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Bank Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center p-2 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official corporate logo for BAC Credomatic, featuring minimalist red and white branding with a professional financial service aesthetic and sharp geometric lines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjNcjZB8G57iHwWWdXldBZ7TeiSmmGGMZxL48EH_b4N5pDry4QDHhUOil04TtVkadISjourYWlxOAilFArN5b56RfmPQjHdBkd9iZiTmR4lchIKmVGfKIZNl1vwyarPwlqjrGaVc0YfFeaJNqLd_F71d9V24Tw6P6GbXwTOHbEtowuEkmtTSn0dht8TjhetvgBN9_kgV7BCE7EPUeR9FByU69Z7cMwhHPRBpSyXc9uCFg8KUDqOQhkkGeLs06_M3S-ZDTrNm8ue3e_">
+</div>
+<div>
+<p class="font-bold text-primary">BAC</p>
+<p class="text-body-sm text-on-surface-variant">BAC Credomatic</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+<span class="ml-3 text-body-sm font-medium text-primary">Activo</span>
+</label>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-secondary-container hover:bg-primary/10 hover:text-primary rounded-lg transition-colors border border-transparent hover:border-primary/20" onclick="selectBank('BAC')" title="Configurar Mapeo">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+<button class="p-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-lg transition-colors" title="Eliminar">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Bank Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group bg-surface-container/30">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center p-2 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official corporate logo for Banco Industrial Guatemala, showcasing a prominent blue and yellow design with a modern institutional banking appearance, reflecting stability and growth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp82YB5URCf8Xu5IDRK04AuO8dP-Zm8f0caFo67x6sxKn8fXUSVnpwSXL0YW5q6rimTxORgV5yF7zRkO0YLZ0c9dfoxAa4mD90UBZJXg9Bbvymh1HJ_ZJ4Llj3wf7vTa8IHOI6_i3NC7CVBQVEOFbaUjq3RnZlWI2BHjzYSRkddYas8vXfq3PatOxmiA5Enh3ClIFPr89C-aCY8IkVvslj_lxQv4w563SzKVkSLamWjHXIoM0dJM50mSqbAomxMp7ZOUXpUUCFMJFC">
+</div>
+<div>
+<p class="font-bold text-primary">BI</p>
+<p class="text-body-sm text-on-surface-variant">Banco Industrial</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+<span class="ml-3 text-body-sm font-medium text-primary">Activo</span>
+</label>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-secondary-container hover:bg-primary/10 hover:text-primary rounded-lg transition-colors border border-transparent hover:border-primary/20" onclick="selectBank('BI')" title="Configurar Mapeo">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+<button class="p-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Bank Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center p-2 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official logo for Banrural, featuring agricultural green tones and a friendly, accessible financial brand identity common in rural banking sectors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY-KmlL9G_7KXWKhqpIEy9HPIgkhVzLM21fSZZsKKJ2yStH94gPtkFUiy_-tB8JvUBY0G_tMiY4pDGzMpCCI4mU79ShSIfCg3P0NFn_WLU4DGyvqn972tgCWS6ltJplEQgBhH95XmpqNtXzi9nSKBTi7Ra67CHMZsfY__RvlSnk-f0CuCE58-tBCvxT9ndX7K4hvIcNxI5oI64tcz3jaI-NWKo1xrj51Rb09-fVYUocDXrtp_exNKqkMlqMK6MF5Mhjq5Jogtq--Hj">
+</div>
+<div>
+<p class="font-bold text-primary">BANRURAL</p>
+<p class="text-body-sm text-on-surface-variant">Banrural</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+<span class="ml-3 text-body-sm font-medium text-primary">Activo</span>
+</label>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-secondary-container hover:bg-primary/10 hover:text-primary rounded-lg transition-colors border border-transparent hover:border-primary/20" onclick="selectBank('BANRURAL')" title="Configurar Mapeo">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+<button class="p-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Bank Row 4 -->
+<tr class="hover:bg-surface-container transition-colors group bg-surface-container/30">
+<td class="px-6 py-4 border-none">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center p-2 border border-outline-variant">
+<img class="w-full h-full object-contain" data-alt="Official logo for G&amp;T Continental bank, with vibrant yellow and blue branding, a classic financial mark representing professional corporate stability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOma_W3IjtPd_62NkAocXr1B8BHxJXVx3HWYSS6-bMCtjmYZf0R426VJDysQfZ4uuuo8YwtF539mIDYLz_1sgvSNuNy99SqcyoXd3BbpNjjceFuFhHL3Os7EaKyQR6Cx_YucAHFcjnmHkFDmDjBWJESepj42NS8IeCXb5nCI3NIvvix9xmH3339YSvLBIFMhOJlLSfoNldYN6NGbD1UXNC6ST1Y5PogNBz_5aKllYZfgHf69oha89j5BNM0CUmGwK6kT5WMX0B9zsE">
+</div>
+<div>
+<p class="font-bold text-primary">GYT</p>
+<p class="text-body-sm text-on-surface-variant">G&amp;T Continental</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-center border-none">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+<span class="ml-3 text-body-sm font-medium text-primary">Activo</span>
+</label>
+</td>
+<td class="px-6 py-4 text-right border-none">
+<div class="flex justify-end gap-2">
+<button class="p-2 text-on-secondary-container hover:bg-primary/10 hover:text-primary rounded-lg transition-colors border border-transparent hover:border-primary/20" onclick="selectBank('GYT')" title="Configurar Mapeo">
+<span class="material-symbols-outlined">settings_input_component</span>
+</button>
+<button class="p-2 text-on-secondary-container hover:bg-error/10 hover:text-error rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex justify-between items-center">
+<p class="text-body-sm text-on-surface-variant">Mostrando 4 de 4 bancos registrados</p>
+<div class="flex gap-2">
+<button class="px-4 py-1.5 border border-outline-variant rounded text-body-sm disabled:opacity-50" disabled="">Anterior</button>
+<button class="px-4 py-1.5 border border-outline-variant rounded text-body-sm bg-surface-container-lowest font-bold">1</button>
+<button class="px-4 py-1.5 border border-outline-variant rounded text-body-sm disabled:opacity-50" disabled="">Siguiente</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Dynamic Field Mapping Configuration -->
+<div class="lg:col-span-5 space-y-6">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">settings_input_component</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 text-on-surface">Mapeo de CSV Export</h2>
+<p class="text-body-sm text-on-surface-variant">Configuración técnica de salida para <span class="font-bold text-primary" id="current-bank">BAC</span></p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+<!-- Config Tabs -->
+<div class="flex border-b border-outline-variant bg-surface-container-low">
+<button class="px-6 py-3 text-body-sm font-bold border-b-2 border-primary text-primary">Estructura</button>
+<button class="px-6 py-3 text-body-sm font-medium text-on-surface-variant hover:text-primary transition-colors">Preferencias</button>
+</div>
+<div class="p-6 space-y-6 custom-scrollbar overflow-y-auto max-h-[600px]">
+<!-- General Format -->
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1.5">
+<label class="text-label-caps text-on-surface-variant">Separador</label>
+<select class="w-full bg-surface-container-low border-outline-variant rounded-lg text-body-sm focus:ring-primary focus:border-primary">
+<option>Coma (,)</option>
+<option>Punto y Coma (;)</option>
+<option>Tabulador (\t)</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-label-caps text-on-surface-variant">Codificación</label>
+<select class="w-full bg-surface-container-low border-outline-variant rounded-lg text-body-sm focus:ring-primary focus:border-primary">
+<option>UTF-8</option>
+<option>ANSI / Windows-1252</option>
+<option>ISO-8859-1</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" id="headers" type="checkbox">
+<label class="text-body-sm text-on-surface" for="headers">Incluir encabezados en el archivo</label>
+</div>
+<!-- Drag and Drop Mapping Area -->
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<label class="text-label-caps text-on-surface-variant">Orden y Mapeo de Campos</label>
+<button class="text-primary text-xs font-bold hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                                    Añadir Campo
+                                </button>
+</div>
+<div class="space-y-2" id="mapping-container"><!-- Mapping Row 1 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="CORRELATIVO">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Auto-incremental</option>
+<option>ID Empleado</option>
+<option>No. Cuenta</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<!-- Mapping Row 2 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="NOMBRE_EMPLEADO">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Nombre Completo</option>
+<option>Primer Nombre</option>
+<option>Primer Apellido</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<!-- Mapping Row 3 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="TIPO_CUENTA">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Tipo de Cuenta</option>
+<option>Moneda</option>
+<option>Banco</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<!-- Mapping Row 4 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="NUMERO_CUENTA">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Número de Cuenta</option>
+<option>DPI</option>
+<option>NIT</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<!-- Mapping Row 5 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="TOTAL_LIQUIDO">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Sueldo Líquido</option>
+<option>Sueldo Base</option>
+<option>Bonificación Ley</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<!-- Mapping Row 6 -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant group">
+<span class="material-symbols-outlined text-outline cursor-move opacity-40 group-hover:opacity-100">drag_indicator</span>
+<div class="flex-1 grid grid-cols-2 gap-3">
+<input class="bg-surface-container-lowest border-outline-variant rounded text-body-sm font-mono focus:ring-primary py-1 px-2" placeholder="Nombre en CSV" type="text" value="COMENTARIO_PAGO">
+<select class="bg-surface-container-lowest border-outline-variant rounded text-body-sm focus:ring-primary py-1 px-2">
+<option selected="">Comentario Período</option>
+<option>Fecha de Pago</option>
+<option>Nombre Empresa</option>
+</select>
+</div>
+<button class="text-error opacity-40 hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm">close</span></button>
+</div></div>
+</div>
+<!-- Preview Section -->
+<div class="pt-6 border-t border-outline-variant">
+<label class="text-label-caps text-on-surface-variant flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                                Vista Previa de Fila (Sample)
+                            </label>
+<div class="bg-inverse-surface text-inverse-on-surface p-4 rounded-lg font-mono text-[12px] break-all leading-relaxed shadow-inner overflow-x-auto whitespace-nowrap"><span class="text-tertiary-fixed-dim">1</span>,<span class="text-primary-fixed-dim">"JUAN PEREZ GARCIA"</span>,<span class="text-surface-variant">"Monetaria"</span>,<span class="text-surface-variant">"1234567890"</span>,<span class="text-primary-fixed">4500.50</span>,<span class="text-primary-fixed-dim">"Segunda Quincena Mayo 2024"</span></div>
+<p class="mt-2 text-[10px] text-on-surface-variant italic">Los datos mostrados son ficticios para propósitos de visualización.</p>
+</div>
+</div>
+<div class="p-6 bg-surface-container-low border-t border-outline-variant flex justify-end gap-3">
+<button class="px-5 py-2 border border-outline-variant rounded-lg text-body-sm font-bold hover:bg-surface-container transition-colors">Cancelar</button>
+<button class="px-5 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-bold shadow-sm hover:opacity-90 transition-opacity">Guardar Configuración</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function selectBank(bankName) {
+            document.getElementById('current-bank').innerText = bankName;
+            
+            // Subtle flash effect to indicate change
+            const configPanel = document.getElementById('current-bank').closest('.lg\\:col-span-5');
+            configPanel.style.opacity = '0.5';
+            setTimeout(() => {
+                configPanel.style.opacity = '1';
+                configPanel.style.transition = 'opacity 0.3s ease';
+            }, 100);
+        }
+
+        // Add visual feedback to mapping rows on hover
+        const rows = document.querySelectorAll('#mapping-container > div');
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('shadow-md');
+                row.style.transform = 'translateY(-1px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('shadow-md');
+                row.style.transform = 'translateY(0)';
+            });
+            row.style.transition = 'all 0.2s ease';
+        });
+    </script>
+
+
+</body></html>

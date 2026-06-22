@@ -23,14 +23,21 @@ interface TransferRow {
   nombreCompleto: string;
   banco: string;
   tipoCuenta: string;
+  tipoCuentaRaw: string;
   numeroCuenta: string;
   liquido: number;
   id_departamento: number;
+  dpi: string;
+  nit: string;
+  sueldoBase: number;
+  comentarioPeriodo: string;
+  fechaPago: string;
+  nombreEmpresa: string;
 }
 
 interface CsvField {
-  id: string;
-  label: string;
+  id: string; // Resolves to the db_field mapping name
+  label: string; // Resolves to the CSV column name header
 }
 
 export default function TransferenciasPage() {
@@ -47,7 +54,10 @@ export default function TransferenciasPage() {
   const [loading, setLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Configuration state
+  // DB Banks Configuration state
+  const [bancosDb, setBancosDb] = useState<any[]>([]);
+
+  // Configuration state (Sidebar UI)
   const [selectedBank, setSelectedBank] = useState("Banco Industrial (BI-Link)");
   const [csvSeparator, setCsvSeparator] = useState("Coma (,)");
   const [csvEncoding, setCsvEncoding] = useState("UTF-8");
@@ -93,7 +103,17 @@ export default function TransferenciasPage() {
         if (dErr) throw dErr;
         setDepartments(dData || []);
 
-        // Load saved configuration from localStorage
+        // Fetch banks configuration from database
+        const { data: bData, error: bErr } = await supabase
+          .from("banco")
+          .select("*")
+          .order("nombre", { ascending: true });
+        if (bErr) throw bErr;
+        
+        const dbBanks = bData || [];
+        setBancosDb(dbBanks);
+
+        // Load saved configuration from localStorage or DB
         const savedConfig = localStorage.getItem("transferencias_config");
         if (savedConfig) {
           try {
@@ -104,6 +124,20 @@ export default function TransferenciasPage() {
             if (parsed.csvFields) setCsvFields(parsed.csvFields);
           } catch (e) {
             console.error("Error parsing saved configuration", e);
+          }
+        } else if (dbBanks.length > 0) {
+          // Fallback: load default settings for BI from Supabase if no local storage
+          const biBank = dbBanks.find(b => b.nombre.toLowerCase().includes("industrial") || (b.codigo || "").toUpperCase() === "BI");
+          if (biBank) {
+            setSelectedBank(biBank.nombre);
+            if (biBank.separador) setCsvSeparator(biBank.separador);
+            if (biBank.codificacion) setCsvEncoding(biBank.codificacion);
+            if (Array.isArray(biBank.mapeo_campos) && biBank.mapeo_campos.length > 0) {
+              setCsvFields(biBank.mapeo_campos.map((f: any, idx: number) => ({
+                id: f.db_field,
+                label: `${idx + 1}. ${f.csv_name}`
+              })));
+            }
           }
         }
       } catch (err: any) {
@@ -128,20 +162,36 @@ export default function TransferenciasPage() {
           id_empleado,
           id_periodo,
           anulada,
+          id_empresa,
+          empresa (
+            nombre
+          ),
           empleado (
             id_empleado,
             nombre,
             apellido,
             id_departamento,
+            cui,
+            nit,
             cuenta_bancaria_empleado (
               banco,
               numero_cuenta,
               principal,
-              activa
+              activa,
+              tipo_cuenta
             )
           ),
           resumen_constancia (
-            liquido_recibir
+            liquido_recibir,
+            total_ingresos,
+            total_descuentos
+          ),
+          periodo_pago (
+            mes,
+            anio,
+            tipo,
+            fecha_fin,
+            texto_concepto
           )
         `)
         .eq("id_periodo", periodId)
@@ -158,15 +208,22 @@ export default function TransferenciasPage() {
         const activeAcct = accounts.find((a: any) => a.principal && a.activa) || 
                            accounts.find((a: any) => a.activa) || 
                            accounts[0] || 
-                           { banco: "Sin Registrar", numero_cuenta: "No Disponible" };
+                           { banco: "Sin Registrar", numero_cuenta: "No Disponible", tipo_cuenta: "monetario" };
 
         const banco = activeAcct.banco;
-        const tipoCuenta = banco.toLowerCase().includes("banrural") ? "Ahorros" : "Monetaria";
+        const tipoCuentaRaw = activeAcct.tipo_cuenta || "monetario";
+        const tipoCuenta = tipoCuentaRaw === "ahorro" ? "Ahorros" : "Monetaria";
         const numeroCuenta = activeAcct.numero_cuenta;
 
         const resObj = c.resumen_constancia;
         const res = Array.isArray(resObj) ? resObj[0] : resObj;
         const liquido = res ? parseFloat(res.liquido_recibir || 0) : 0;
+        const sueldoBase = res ? parseFloat(res.total_ingresos || 0) - 250 : liquido;
+
+        const periodInfo = c.periodo_pago;
+        const comentarioPeriodo = periodInfo?.texto_concepto || "";
+        const fechaPago = periodInfo?.fecha_fin || new Date().toISOString().slice(0, 10);
+        const nombreEmpresa = c.empresa?.nombre || "Importaciones CRESGO";
 
         return {
           id_empleado: c.id_empleado,
@@ -174,9 +231,16 @@ export default function TransferenciasPage() {
           nombreCompleto: name,
           banco,
           tipoCuenta,
+          tipoCuentaRaw,
           numeroCuenta,
           liquido,
-          id_departamento: emp?.id_departamento || 0
+          id_departamento: emp?.id_departamento || 0,
+          dpi: emp?.cui || "",
+          nit: emp?.nit || "",
+          sueldoBase,
+          comentarioPeriodo,
+          fechaPago,
+          nombreEmpresa
         };
       });
 
@@ -235,21 +299,63 @@ export default function TransferenciasPage() {
     newFields[newIndex] = temp;
 
     // Update numbers in the labels dynamically
-    const updated = newFields.map((f, idx) => ({
-      ...f,
-      label: `${idx + 1}. ${f.label.split(". ")[1]}`
-    }));
+    const updated = newFields.map((f, idx) => {
+      const parts = f.label.split(". ");
+      const labelText = parts.length > 1 ? parts[1] : f.label;
+      return {
+        ...f,
+        label: `${idx + 1}. ${labelText}`
+      };
+    });
     setCsvFields(updated);
   };
 
   // Reset fields to default order
   const handleResetFields = () => {
-    setCsvFields([
-      { id: "correlativo", label: "1. Correlativo" },
-      { id: "cuenta", label: "2. No. de Cuenta" },
-      { id: "monto", label: "3. Monto" },
-      { id: "nombre", label: "4. Nombre Empleado" },
-    ]);
+    // Find matching bank configuration in Supabase to restore it
+    const matchedBank = getMatchedBankConfig(selectedBank);
+    if (matchedBank && Array.isArray(matchedBank.mapeo_campos) && matchedBank.mapeo_campos.length > 0) {
+      setCsvFields(matchedBank.mapeo_campos.map((f: any, idx: number) => ({
+        id: f.db_field,
+        label: `${idx + 1}. ${f.csv_name}`
+      })));
+      if (matchedBank.separador) setCsvSeparator(matchedBank.separador);
+      if (matchedBank.codificacion) setCsvEncoding(matchedBank.codificacion);
+    } else {
+      setCsvFields([
+        { id: "correlativo", label: "1. Correlativo" },
+        { id: "cuenta", label: "2. No. de Cuenta" },
+        { id: "monto", label: "3. Monto" },
+        { id: "nombre", label: "4. Nombre Empleado" },
+      ]);
+    }
+  };
+
+  // Match the dropdown selection string with a Supabase database row
+  const getMatchedBankConfig = (bankName: string) => {
+    if (bancosDb.length === 0) return null;
+    return bancosDb.find(b => {
+      const nameLower = b.nombre.toLowerCase();
+      const codeLower = (b.codigo || "").toLowerCase();
+      const selLower = bankName.toLowerCase();
+      return selLower.includes(nameLower) || (codeLower && selLower.includes(codeLower)) || nameLower.includes(selLower);
+    }) || null;
+  };
+
+  // Update layout settings when selecting a bank in dropdown
+  const handleBankChange = (bankName: string) => {
+    setSelectedBank(bankName);
+    const matchedBank = getMatchedBankConfig(bankName);
+    if (matchedBank) {
+      if (matchedBank.separador) setCsvSeparator(matchedBank.separador);
+      if (matchedBank.codificacion) setCsvEncoding(matchedBank.codificacion);
+      if (Array.isArray(matchedBank.mapeo_campos) && matchedBank.mapeo_campos.length > 0) {
+        setCsvFields(matchedBank.mapeo_campos.map((f: any, idx: number) => ({
+          id: f.db_field,
+          label: `${idx + 1}. ${f.csv_name}`
+        })));
+      }
+    }
   };
 
   // Save current config to localStorage
@@ -273,32 +379,103 @@ export default function TransferenciasPage() {
       return;
     }
 
+    const matchedBank = getMatchedBankConfig(selectedBank);
+
+    // Apply Bank Preference Account Format validation if configured
+    if (matchedBank?.preferencias?.validar_cuenta) {
+      const invalidAccounts = selectedRows.filter(r => !/^\d+$/.test(r.numeroCuenta));
+      if (invalidAccounts.length > 0) {
+        setStatusMessage({
+          type: "error",
+          text: `Error: Empleados (${invalidAccounts.map(i => i.nombreCompleto).join(", ")}) tienen números de cuenta no válidos.`
+        });
+        return;
+      }
+    }
+
     // Determine separator character
     let separator = ",";
     if (csvSeparator.includes("Punto")) separator = ";";
     else if (csvSeparator.includes("Tabulador")) separator = "\t";
 
-    // Build header row based on current field order
+    const isBI = matchedBank?.codigo?.toUpperCase().trim() === "BI" || 
+                 selectedBank.toLowerCase().includes("industrial") || 
+                 selectedBank.toLowerCase().includes("bi-link");
+
+    // Build header row based on current field order (using label without index prefix)
     const headerRow = csvFields.map(f => {
-      if (f.id === "correlativo") return "Correlativo";
-      if (f.id === "cuenta") return "No. Cuenta";
-      if (f.id === "monto") return "Monto";
-      if (f.id === "nombre") return "Nombre Empleado";
-      return f.id;
+      const parts = f.label.split(". ");
+      return parts.length > 1 ? parts[1] : f.label;
     }).join(separator);
 
     // Build data rows
     const dataRows = selectedRows.map((r, index) => {
       return csvFields.map(f => {
-        if (f.id === "correlativo") return (index + 1).toString().padStart(4, "0");
-        if (f.id === "cuenta") return `"${r.numeroCuenta}"`; // Quote accounts to prevent scientific notation in Excel
-        if (f.id === "monto") return r.liquido.toFixed(2);
-        if (f.id === "nombre") return `"${r.nombreCompleto}"`;
+        const fieldId = f.id;
+
+        // Resolve mapped database field values
+        if (fieldId === "correlativo" || fieldId === "Auto-incremental") {
+          return (index + 1).toString().padStart(4, "0");
+        }
+        if (fieldId === "cuenta" || fieldId === "Número de Cuenta") {
+          return `"${r.numeroCuenta}"`; // Quote accounts to prevent scientific notation in Excel
+        }
+        if (fieldId === "monto" || fieldId === "Sueldo Líquido") {
+          return r.liquido.toFixed(2);
+        }
+        if (fieldId === "nombre" || fieldId === "Nombre Completo") {
+          return `"${r.nombreCompleto}"`;
+        }
+        if (fieldId === "Primer Nombre") {
+          return `"${r.nombreCompleto.split(" ")[0]}"`;
+        }
+        if (fieldId === "Primer Apellido") {
+          const parts = r.nombreCompleto.split(" ");
+          const apellido = parts.length > 2 ? parts[2] : (parts[1] || "");
+          return `"${apellido}"`;
+        }
+        if (fieldId === "Tipo de Cuenta") {
+          // Special mapping rule: monetario -> 1, ahorro -> 2 ONLY for Banco Industrial
+          if (isBI) {
+            return r.tipoCuentaRaw === "monetario" ? "1" : "2";
+          }
+          return r.tipoCuentaRaw === "monetario" ? "Monetaria" : "Ahorros";
+        }
+        if (fieldId === "Moneda") {
+          return "GTQ";
+        }
+        if (fieldId === "Banco") {
+          return `"${r.banco}"`;
+        }
+        if (fieldId === "DPI") {
+          return `"${r.dpi}"`;
+        }
+        if (fieldId === "NIT") {
+          return `"${r.nit}"`;
+        }
+        if (fieldId === "Sueldo Base") {
+          return r.sueldoBase.toFixed(2);
+        }
+        if (fieldId === "Bonificación Ley") {
+          return "250.00";
+        }
+        if (fieldId === "Comentario Período") {
+          return `"${r.comentarioPeriodo}"`;
+        }
+        if (fieldId === "Fecha de Pago") {
+          return `"${r.fechaPago}"`;
+        }
+        if (fieldId === "Nombre Empresa") {
+          return `"${r.nombreEmpresa}"`;
+        }
+
         return "";
       }).join(separator);
     });
 
-    const csvContent = [headerRow, ...dataRows].join("\n");
+    const includeHeaders = matchedBank ? matchedBank.incluye_encabezados : true;
+    const eol = matchedBank?.preferencias?.tipo_eol === "Unix / Linux (LF)" ? "\n" : "\r\n";
+    const csvContent = (includeHeaders ? [headerRow, ...dataRows] : dataRows).join(eol);
     
     // Add UTF-8 BOM if UTF-8 is selected (so Excel opens accented chars correctly)
     const blobContent = csvEncoding === "UTF-8" ? ["\uFEFF", csvContent] : [csvContent];
@@ -307,13 +484,14 @@ export default function TransferenciasPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     
-    // Format file name
+    // Format file name based on bank preferences
     const period = periods.find(p => p.id_periodo === selectedPeriodId);
-    const bankName = selectedBank.split(" (")[0].replace(/\s+/g, "_");
+    const bankNameClean = selectedBank.split(" (")[0].replace(/\s+/g, "_");
     const periodName = period ? `${period.mes}_${period.anio}` : "periodo";
+    const prefijo = matchedBank?.preferencias?.prefijo || "Transferencias";
     
     link.href = url;
-    link.setAttribute("download", `Transferencias_${bankName}_${periodName}.csv`);
+    link.setAttribute("download", `${prefijo}_${bankNameClean}_${periodName}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -631,12 +809,22 @@ export default function TransferenciasPage() {
                     <select 
                       className="w-full border border-outline-variant rounded-lg focus:ring-primary focus:border-primary text-body-base appearance-none py-2 px-3 pr-10 bg-transparent"
                       value={selectedBank}
-                      onChange={(e) => setSelectedBank(e.target.value)}
+                      onChange={(e) => handleBankChange(e.target.value)}
                     >
-                      <option>Banco Industrial (BI-Link)</option>
-                      <option>Banrural (Carga Masiva)</option>
-                      <option>G&amp;T Continental</option>
-                      <option>BAC Credomatic</option>
+                      {bancosDb.length > 0 ? (
+                        bancosDb.map(b => (
+                          <option key={b.id_banco} value={b.nombre}>
+                            {b.nombre} {b.codigo ? `(${b.codigo})` : ""}
+                          </option>
+                        ))
+                      ) : (
+                        <>
+                          <option>Banco Industrial (BI-Link)</option>
+                          <option>Banrural (Carga Masiva)</option>
+                          <option>G&amp;T Continental</option>
+                          <option>BAC Credomatic</option>
+                        </>
+                      )}
                     </select>
                     <span className="material-symbols-outlined absolute right-3 top-2.5 text-secondary pointer-events-none">expand_more</span>
                   </div>
@@ -698,7 +886,7 @@ export default function TransferenciasPage() {
                       >
                         <option>Coma (,)</option>
                         <option>Punto y Coma (;)</option>
-                        <option>Tabulador</option>
+                        <option>Tabulador (\t)</option>
                       </select>
                       <span className="material-symbols-outlined absolute right-2 top-2.5 text-secondary pointer-events-none text-sm">expand_more</span>
                     </div>

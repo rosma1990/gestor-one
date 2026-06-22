@@ -18,6 +18,7 @@ interface PeriodoPago {
   fecha_inicio: string;
   fecha_fin: string;
   cerrado: boolean;
+  texto_concepto?: string | null;
   empresa: {
     nombre: string;
   } | null;
@@ -54,7 +55,8 @@ export default function PeriodosPagoCRUD() {
     tipo: "QUINCENAL",
     fecha_inicio: "",
     fecha_fin: "",
-    cerrado: false
+    cerrado: false,
+    texto_concepto: ""
   });
 
   // Delete State
@@ -134,7 +136,8 @@ export default function PeriodosPagoCRUD() {
       tipo: "QUINCENAL",
       fecha_inicio: "",
       fecha_fin: "",
-      cerrado: false
+      cerrado: false,
+      texto_concepto: ""
     });
     setSelectedItem(null);
     setShowModal(true);
@@ -150,7 +153,8 @@ export default function PeriodosPagoCRUD() {
       tipo: item.tipo || "QUINCENAL",
       fecha_inicio: item.fecha_inicio || "",
       fecha_fin: item.fecha_fin || "",
-      cerrado: item.cerrado ?? false
+      cerrado: item.cerrado ?? false,
+      texto_concepto: item.texto_concepto || ""
     });
     setShowModal(true);
   };
@@ -178,7 +182,8 @@ export default function PeriodosPagoCRUD() {
         tipo: formData.tipo,
         fecha_inicio: formData.fecha_inicio,
         fecha_fin: formData.fecha_fin,
-        cerrado: formData.cerrado
+        cerrado: formData.cerrado,
+        texto_concepto: formData.texto_concepto.trim() || null
       };
 
       if (modalMode === "create") {
@@ -346,8 +351,13 @@ export default function PeriodosPagoCRUD() {
                               {item.empresa?.nombre || "-"}
                             </span>
                           </td>
-                          <td className="px-6 py-4 font-medium text-on-surface">
-                            {item.mes} {item.anio}
+                          <td className="px-6 py-4">
+                            <p className="font-medium text-on-surface">{item.mes} {item.anio}</p>
+                            {item.texto_concepto && (
+                              <p className="text-[11px] text-on-surface-variant line-clamp-1 mt-0.5" title={item.texto_concepto}>
+                                {item.texto_concepto}
+                              </p>
+                            )}
                           </td>
                           <td className="px-6 py-4">
                             <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
@@ -531,6 +541,16 @@ export default function PeriodosPagoCRUD() {
                       onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-1.5 font-sans">
+                  <label className="block text-label-caps text-on-surface-variant uppercase font-semibold">Texto de Concepto</label>
+                  <textarea 
+                    className="w-full px-4 py-2 bg-background border border-outline-variant rounded-lg focus:ring-1 focus:ring-primary focus:border-primary text-body-base focus:outline-none min-h-[80px]" 
+                    placeholder="Ej. Salario ordinario correspondiente al período del 01 al 15 de enero..."
+                    value={formData.texto_concepto}
+                    onChange={(e) => setFormData({ ...formData, texto_concepto: e.target.value })}
+                  />
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
