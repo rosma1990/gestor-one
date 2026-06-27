@@ -17,7 +17,8 @@ type ActivePage =
   | "constantesistema"
   | "periodospago"
   | "bancos"
-  | "usuarios";
+  | "usuarios"
+  | "configuracion";
 
 interface SidebarProps {
   activePage: ActivePage;
@@ -29,6 +30,7 @@ const NAV_ITEMS = [
   { key: "constancias",    icon: "description",     label: "Constancias",    href: "/constancias" },
   { key: "transferencias", icon: "account_balance", label: "Transferencias", href: "/transferencias" },
   { key: "maestros",       icon: "database",        label: "Maestros",       href: "#", hasSubmenu: true },
+  { key: "configuracion",  icon: "settings",        label: "Configuración",  href: "/configuracion" },
   { key: "usuarios",       icon: "group",           label: "Usuarios",       href: "/usuarios" },
 ] as const;
 

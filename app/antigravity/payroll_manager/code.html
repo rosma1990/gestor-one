@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Configuración de Notificaciones - CRESGO</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#d5e3fd",
+                    "surface-container": "#e5eeff",
+                    "inverse-surface": "#213145",
+                    "on-surface-variant": "#3f493e",
+                    "tertiary": "#92334c",
+                    "on-background": "#0b1c30",
+                    "secondary-container": "#d5e3fd",
+                    "on-tertiary-fixed-variant": "#80253f",
+                    "inverse-primary": "#80da8c",
+                    "outline-variant": "#bfcabb",
+                    "background": "#f8f9ff",
+                    "surface-bright": "#f8f9ff",
+                    "on-tertiary-container": "#ffecee",
+                    "surface-container-high": "#dce9ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#00531f",
+                    "surface-container-low": "#eff4ff",
+                    "primary-container": "#207d3a",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-tint": "#046d2d",
+                    "tertiary-container": "#b14b64",
+                    "tertiary-fixed": "#ffd9de",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#0b1c30",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb1bf",
+                    "primary": "#006327",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#80da8c",
+                    "surface": "#f8f9ff",
+                    "error": "#ba1a1a",
+                    "outline": "#6f7a6d",
+                    "on-primary-fixed": "#002108",
+                    "on-tertiary-fixed": "#3f0016",
+                    "on-secondary-container": "#57657b",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#b9c7e0",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "on-primary-container": "#c3ffc5",
+                    "inverse-on-surface": "#eaf1ff",
+                    "primary-fixed": "#9bf7a5",
+                    "secondary": "#515f74",
+                    "surface-dim": "#cbdbf5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "1.5rem",
+                    "section-gap": "2rem",
+                    "container-padding": "2rem",
+                    "component-padding-x": "1rem",
+                    "component-padding-y": "0.5rem"
+            },
+            "fontFamily": {
+                    "label-caps": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "h2": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "body-base": ["Inter"],
+                    "h1": ["Inter"],
+                    "h3": ["Inter"]
+            },
+            "fontSize": {
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "h1": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #006327; border-radius: 10px; }
+        .tab-active { border-bottom: 2px solid #006327; color: #006327; }
+        .tab-inactive { color: #6f7a6d; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col py-gutter px-component-padding-x z-50">
+<div class="mb-8">
+<h1 class="font-h2 text-h2 text-primary">CRESGO</h1>
+<p class="font-body-sm text-body-sm text-secondary">Payroll Management</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">payments</span> Planilla
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">assignment_turned_in</span> Constancias
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span> Transferencias
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">database</span> Maestros
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-primary font-bold bg-primary-container/10 transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span> Configuración
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-container-low transition-colors rounded-lg font-body-base text-body-base" href="#">
+<span class="material-symbols-outlined">group</span> Usuarios
+            </a>
+</nav>
+<button class="mt-auto bg-primary text-on-primary py-2 px-4 rounded-lg font-body-base text-body-base hover:opacity-90 transition-opacity">
+            New Payroll Period
+        </button>
+</aside>
+<!-- TopNavBar Anchor -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-container-padding z-40">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full focus-within:ring-2 focus-within:ring-primary rounded-lg transition-all">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border-none pl-10 pr-4 py-2 rounded-lg text-body-sm font-body-sm focus:ring-0" placeholder="Buscar empleado, log o plantilla..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">settings</span>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant pl-6">
+<div class="text-right">
+<p class="text-body-sm font-bold text-on-surface">Admin User</p>
+<p class="text-[10px] uppercase tracking-wider text-outline">Administrator</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="Professional studio portrait of a corporate administrator, high-key lighting, wearing a formal suit, neutral background, sharp focus, digital photography style, clean and modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALoWRqgnDrdL_PaO8UGmMduNaPJbpke4uurVBpMbIgwMrPq6vaL--tmFdpO4KgDoNoTG46qpfHrNg6rmI4OQMnpG2qUfkaVUsi-Xyv67y86YJXY2DroGA4qToFYUUZKGq_Rv_1K1o98_9GI_B1JyuEXmkoZo3wNtOsKBB-oYjCE92k1hWPWAMmkAwD0JsXFu2D0QjUDwCL4ibcrFNSr8Z8k7u-YX4nTCZ4mL40Lg7uhn6FgOAKGsc_K-LDXlSNfAbv1aiB5cw5RJ9a"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 p-gutter min-h-screen">
+<div class="max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="mb-8">
+<h2 class="font-h1 text-h1 text-on-surface">Configuración de Notificaciones</h2>
+<p class="font-body-base text-body-base text-secondary">Administre las plantillas de comunicación y supervise los registros de entrega.</p>
+</div>
+<!-- Dashboard Bento Stats (Optional but enhances UI) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-8">
+<div class="bg-surface-container-lowest p-4 border-t-4 border-primary rounded-xl shadow-sm border border-outline-variant">
+<p class="text-label-caps font-label-caps text-secondary uppercase mb-1">Entregas Hoy</p>
+<h3 class="text-h2 font-h2 text-on-surface">1,284</h3>
+<p class="text-[12px] text-primary flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-sm">trending_up</span> +12% vs ayer
+                    </p>
+</div>
+<div class="bg-surface-container-lowest p-4 border-t-4 border-tertiary rounded-xl shadow-sm border border-outline-variant">
+<p class="text-label-caps font-label-caps text-secondary uppercase mb-1">Errores de Envío</p>
+<h3 class="text-h2 font-h2 text-on-surface">4</h3>
+<p class="text-[12px] text-error flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-sm">warning</span> Acción requerida
+                    </p>
+</div>
+<div class="bg-surface-container-lowest p-4 border-t-4 border-primary-fixed-dim rounded-xl shadow-sm border border-outline-variant">
+<p class="text-label-caps font-label-caps text-secondary uppercase mb-1">Plantillas Activas</p>
+<h3 class="text-h2 font-h2 text-on-surface">12</h3>
+<p class="text-[12px] text-secondary mt-2">En 2 idiomas</p>
+</div>
+<div class="bg-surface-container-lowest p-4 border-t-4 border-secondary rounded-xl shadow-sm border border-outline-variant">
+<p class="text-label-caps font-label-caps text-secondary uppercase mb-1">Promedio Entrega</p>
+<h3 class="text-h2 font-h2 text-on-surface">1.2s</h3>
+<p class="text-[12px] text-secondary mt-2">WhatsApp / Email</p>
+</div>
+</div>
+<!-- Tabbed Interface Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<div class="border-b border-outline-variant px-gutter">
+<nav aria-label="Tabs" class="flex gap-8">
+<button class="py-4 px-1 font-body-base text-body-base font-semibold border-b-2 tab-active transition-all" id="tab-btn-templates" onclick="switchTab('notification_templates')">
+                            Plantillas de Notificación
+                        </button>
+<button class="py-4 px-1 font-body-base text-body-base font-medium border-b-2 tab-inactive transition-all hover:text-primary" id="tab-btn-logs" onclick="switchTab('notification_logs')">
+                            Registro de Logs
+                        </button>
+</nav>
+</div>
+<!-- Tab 1: Notification Templates -->
+<div class="p-gutter block" id="tab-notification_templates">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="font-h3 text-h3 text-on-surface">Listado de Plantillas</h3>
+<p class="text-body-sm text-secondary">Defina los formatos de mensaje para proveedores externos.</p>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-2 hover:opacity-90 transition-all shadow-md">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Agregar Plantilla
+                        </button>
+</div>
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-y border-outline-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">ID</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Provider Template ID</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Categoría</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Idioma</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase text-center">Estado</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">TPL-001</td>
+<td class="px-4 py-4 font-body-base text-body-base font-medium text-primary">wa_payroll_slip_v1</td>
+<td class="px-4 py-4 font-body-base text-body-base">Recibo de Pago</td>
+<td class="px-4 py-4">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[11px] font-bold">ESPAÑOL</span>
+</td>
+<td class="px-4 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-4 text-right">
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">TPL-002</td>
+<td class="px-4 py-4 font-body-base text-body-base font-medium text-primary">wa_transfer_notice_v2</td>
+<td class="px-4 py-4 font-body-base text-body-base">Aviso de Transferencia</td>
+<td class="px-4 py-4">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded text-[11px] font-bold">ESPAÑOL</span>
+</td>
+<td class="px-4 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-4 text-right">
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">TPL-003</td>
+<td class="px-4 py-4 font-body-base text-body-base font-medium text-primary">en_payroll_receipt</td>
+<td class="px-4 py-4 font-body-base text-body-base">Recibo de Pago</td>
+<td class="px-4 py-4">
+<span class="bg-surface-variant text-on-secondary-fixed-variant px-2 py-0.5 rounded text-[11px] font-bold">INGLÉS</span>
+</td>
+<td class="px-4 py-4 text-center">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-4 text-right">
+<button class="text-secondary hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Tab 2: Notification Logs -->
+<div class="p-gutter hidden" id="tab-notification_logs">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+<div>
+<h3 class="font-h3 text-h3 text-on-surface">Historial de Envíos</h3>
+<p class="text-body-sm text-secondary">Trazabilidad completa de las notificaciones enviadas.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="relative">
+<input class="bg-surface border border-outline-variant rounded-lg px-3 py-1.5 text-body-sm focus:ring-primary focus:border-primary" type="date"/>
+</div>
+<select class="bg-surface border border-outline-variant rounded-lg px-3 py-1.5 text-body-sm focus:ring-primary focus:border-primary">
+<option>Todos los Estados</option>
+<option>Enviado</option>
+<option>Fallido</option>
+<option>Pendiente</option>
+</select>
+<button class="bg-secondary-container text-on-secondary-container px-4 py-1.5 rounded-lg font-medium text-body-sm hover:opacity-80 transition-all border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filtrar
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto custom-scrollbar border border-outline-variant rounded-lg">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Log ID</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Empleado</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Proveedor</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Plantilla</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Estado</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">ID Mensaje</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Error</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-secondary uppercase">Fecha/Hora</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1: Sent -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">LOG-12845</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-body-base font-semibold text-on-surface">Roberto Mejía</span>
+<span class="text-[11px] text-outline">ID: EMP-042</span>
+</div>
+</td>
+<td class="px-4 py-4 font-body-base text-body-base">WhatsApp - Twilio</td>
+<td class="px-4 py-4 font-body-base text-body-base">wa_payroll_slip_v1</td>
+<td class="px-4 py-4">
+<span class="px-2 py-1 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">ENVIADO</span>
+</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">SM92384a...</td>
+<td class="px-4 py-4 font-body-sm text-body-sm text-outline">N/A</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">24/05/2024 14:32</td>
+</tr>
+<!-- Row 2: Failed -->
+<tr class="bg-error-container/5 hover:bg-error-container/10 transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">LOG-12844</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-body-base font-semibold text-on-surface">Lucía Torres</span>
+<span class="text-[11px] text-outline">ID: EMP-118</span>
+</div>
+</td>
+<td class="px-4 py-4 font-body-base text-body-base">WhatsApp - Twilio</td>
+<td class="px-4 py-4 font-body-base text-body-base">wa_transfer_notice_v2</td>
+<td class="px-4 py-4">
+<span class="px-2 py-1 rounded-full text-[11px] font-bold bg-error/10 text-error border border-error/20">FALLIDO</span>
+</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">SM92384b...</td>
+<td class="px-4 py-4 font-body-sm text-body-sm text-error font-medium">Invalid phone number</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">24/05/2024 14:30</td>
+</tr>
+<!-- Row 3: Pending -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-4 py-4 font-data-tabular text-data-tabular">LOG-12843</td>
+<td class="px-4 py-4">
+<div class="flex flex-col">
+<span class="font-body-base font-semibold text-on-surface">Carlos Salazar</span>
+<span class="text-[11px] text-outline">ID: EMP-089</span>
+</div>
+</td>
+<td class="px-4 py-4 font-body-base text-body-base">Email - SendGrid</td>
+<td class="px-4 py-4 font-body-base text-body-base">en_payroll_receipt</td>
+<td class="px-4 py-4">
+<span class="px-2 py-1 rounded-full text-[11px] font-bold bg-secondary/10 text-secondary border border-secondary/20">PENDIENTE</span>
+</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">---</td>
+<td class="px-4 py-4 font-body-sm text-body-sm text-outline">Queued</td>
+<td class="px-4 py-4 font-data-tabular text-data-tabular text-secondary">24/05/2024 14:28</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex justify-between items-center mt-6">
+<p class="text-body-sm text-secondary">Mostrando 1-10 de 1,284 registros</p>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-bold">1</button>
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-low transition-colors">2</button>
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-low transition-colors">3</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Notification Modal (Interactive Element) -->
+<div class="fixed inset-0 bg-on-background/40 backdrop-blur-sm z-50 hidden transition-all flex items-center justify-center p-4" id="modal-backdrop">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl shadow-xl border border-outline-variant overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="modal-content">
+<div class="p-6 border-b border-outline-variant flex justify-between items-center">
+<h4 class="font-h3 text-h3 text-on-surface">Agregar Plantilla</h4>
+<button class="text-secondary hover:text-error transition-colors" onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="p-6 space-y-4">
+<div>
+<label class="block text-label-caps font-label-caps text-secondary mb-1">PROVIDER TEMPLATE ID</label>
+<input class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-base focus:ring-2 focus:ring-primary focus:border-primary" placeholder="Ej: wa_template_name" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-label-caps font-label-caps text-secondary mb-1">CATEGORÍA</label>
+<select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-base focus:ring-2 focus:ring-primary focus:border-primary">
+<option>Recibo de Pago</option>
+<option>Aviso de Transferencia</option>
+<option>Constancia Laboral</option>
+</select>
+</div>
+<div>
+<label class="block text-label-caps font-label-caps text-secondary mb-1">IDIOMA</label>
+<select class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-base focus:ring-2 focus:ring-primary focus:border-primary">
+<option>Español</option>
+<option>Inglés</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-label-caps font-label-caps text-secondary mb-1">NOTAS INTERNAS</label>
+<textarea class="w-full border border-outline-variant rounded-lg px-3 py-2 text-body-base focus:ring-2 focus:ring-primary focus:border-primary h-24" placeholder="Describa el propósito de esta plantilla..."></textarea>
+</div>
+</div>
+<div class="p-6 bg-surface-container-low flex justify-end gap-3">
+<button class="px-4 py-2 text-secondary font-medium hover:text-on-surface transition-colors" onclick="closeModal()">Cancelar</button>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-bold shadow-md hover:opacity-90 transition-all">Guardar Plantilla</button>
+</div>
+</div>
+</div>
+<script>
+        function switchTab(tabId) {
+            const templatesTab = document.getElementById('tab-notification_templates');
+            const logsTab = document.getElementById('tab-notification_logs');
+            const templatesBtn = document.getElementById('tab-btn-templates');
+            const logsBtn = document.getElementById('tab-btn-logs');
+
+            if (tabId === 'notification_templates') {
+                templatesTab.classList.remove('hidden');
+                templatesTab.classList.add('block');
+                logsTab.classList.add('hidden');
+                logsTab.classList.remove('block');
+                
+                templatesBtn.classList.add('tab-active');
+                templatesBtn.classList.remove('tab-inactive', 'font-medium');
+                templatesBtn.classList.add('font-semibold');
+                
+                logsBtn.classList.remove('tab-active');
+                logsBtn.classList.add('tab-inactive', 'font-medium');
+                logsBtn.classList.remove('font-semibold');
+            } else {
+                logsTab.classList.remove('hidden');
+                logsTab.classList.add('block');
+                templatesTab.classList.add('hidden');
+                templatesTab.classList.remove('block');
+
+                logsBtn.classList.add('tab-active');
+                logsBtn.classList.remove('tab-inactive', 'font-medium');
+                logsBtn.classList.add('font-semibold');
+
+                templatesBtn.classList.remove('tab-active');
+                templatesBtn.classList.add('tab-inactive', 'font-medium');
+                templatesBtn.classList.remove('font-semibold');
+            }
+        }
+
+        function openModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const content = document.getElementById('modal-content');
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const backdrop = document.getElementById('modal-backdrop');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 300);
+        }
+
+        // Attach modal to the add button
+        document.querySelector('button[class*="Agregar Plantilla"]').addEventListener('click', openModal);
+    </script>
+</body></html>

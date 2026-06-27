@@ -19,16 +19,91 @@ interface Empleado {
   } | null;
 }
 
+function numeroALetras(num: number): string {
+  const unidades = ["", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE"];
+  const decenas = ["", "DIEZ", "VEINTE", "TREINTA", "CUARENTA", "CINCUENTA", "SESENTA", "SETENTA", "OCHENTA", "NOVENTA"];
+  const especiales = ["DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE", "DIECISEIS", "DIECISIETE", "DIECIOCHO", "DIECINUEVE"];
+  const centenas = ["", "CIENTO", "DOSCIENTOS", "TRESCIENTOS", "CUATROCIENTOS", "QUINIENTOS", "SEISCIENTOS", "SETECIENTOS", "OCHOCIENTOS", "NOVECIENTOS"];
+
+  const centavos = Math.round((num % 1) * 100);
+  const entero = Math.floor(num);
+
+  if (entero === 0) return `CERO QUETZALES CON ${centavos.toString().padStart(2, "0")}/100`;
+
+  const convertGroup = (n: number): string => {
+    let output = "";
+    const c = Math.floor(n / 100);
+    const d = Math.floor((n % 100) / 10);
+    const u = n % 10;
+
+    if (c > 0) {
+      if (c === 1 && d === 0 && u === 0) {
+        output += "CIEN ";
+      } else {
+        output += centenas[c] + " ";
+      }
+    }
+
+    if (d > 0) {
+      if (d === 1) {
+        output += especiales[u] + " ";
+        return output;
+      } else if (d === 2 && u > 0) {
+        output += "VEINTI" + unidades[u] + " ";
+        return output;
+      } else {
+        output += decenas[d] + " ";
+        if (u > 0) output += "Y ";
+      }
+    }
+
+    if (u > 0) {
+      output += unidades[u] + " ";
+    }
+
+    return output;
+  };
+
+  let result = "";
+  const miles = Math.floor(entero / 1000);
+  const resto = entero % 1000;
+
+  if (miles > 0) {
+    if (miles === 1) {
+      result += "MIL ";
+    } else {
+      result += convertGroup(miles) + "MIL ";
+    }
+  }
+
+  if (resto > 0) {
+    result += convertGroup(resto);
+  }
+
+  return `${result.trim()} QUETZALES CON ${centavos.toString().padStart(2, "0")}/100`;
+}
+
 export default function SignaturePage() {
   const routeParams = useParams();
-  const token = routeParams ? (routeParams.token as string) : "";
+  // El parámetro de ruta coincide con el nombre de la carpeta de la ruta dinámica, el cual es [TOKEN] en mayúsculas.
+  const token = routeParams ? ((routeParams.TOKEN || routeParams.token) as string) : "";
 
   // Estados de carga y flujo
   const [status, setStatus] = useState<"loading" | "invalid" | "active" | "signed">("loading");
-  const [employee, setEmployee] = useState<Empleado | null>(null);
+  const [employee, setEmployee] = useState<any | null>(null);
+  const [constanciaData, setConstanciaData] = useState<any | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [generatingSignature, setGeneratingSignature] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [debugTimer, setDebugTimer] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebugTimer(true);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Datos de firma
   const [signedAt, setSignedAt] = useState("");
@@ -55,44 +130,13 @@ export default function SignaturePage() {
 
         const tokenData = await res.json();
 
-        // Obtener datos del empleado desde Supabase con manejo de errores robusto
-        let empData: Empleado | null = null;
-        try {
-          const { data, error } = await supabase
-            .from("empleado")
-            .select("*, departamento(nombre, empresa(nombre))")
-            .eq("id_empleado", tokenData.id_empleado)
-            .single();
-
-          if (!error && data) {
-            empData = data as unknown as Empleado;
-          } else {
-            console.warn("Error en consulta de Supabase:", error);
-          }
-        } catch (supabaseErr) {
-          console.warn("Fallo de conexión a la base de datos Supabase, procediendo con datos locales de contingencia:", supabaseErr);
+        if (tokenData.constancia) {
+          setConstanciaData(tokenData.constancia);
+          setEmployee(tokenData.constancia.empleado);
+        } else {
+          setStatus("invalid");
+          return;
         }
-
-        // Si la base de datos remota es inaccesible desde el dispositivo móvil,
-        // cargamos datos estructurados realistas basados en el ID para no colgar la demostración.
-        if (!empData) {
-          empData = {
-            id_empleado: tokenData.id_empleado,
-            nombre: "Carlos Roberto",
-            apellido: "Méndez",
-            cui: "3004 59082 0101",
-            nit: "829102-3",
-            puesto: "Analista de Logística",
-            departamento: {
-              nombre: "Logística",
-              empresa: {
-                nombre: "Importaciones CRESGO"
-              }
-            }
-          };
-        }
-
-        setEmployee(empData);
 
         // Generar un hash determinista a partir del token para simular un Código de Verificación SHA-256
         const simpleHash = Array.from(token.replace(/-/g, ""))
@@ -102,7 +146,7 @@ export default function SignaturePage() {
           .toUpperCase();
         setShaHash(`SHA-256: ${simpleHash}...${token.slice(-4).toUpperCase()}`);
 
-        if (tokenData.used) {
+        if (tokenData.usado) {
           setSignedAt(tokenData.signedAt || "");
           setOriginIp(tokenData.ip || "");
           setSavedSignatureData(tokenData.signatureData || "");
@@ -236,6 +280,18 @@ export default function SignaturePage() {
         setSavedSignatureData(signatureDataUrl);
         setShowModal(false);
         setStatus("signed");
+
+        // Iniciar proceso de generación y subida de PDF
+        setUploadingPdf(true);
+        setTimeout(async () => {
+          try {
+            await generateAndUploadSignedPdf();
+          } catch (uploadErr) {
+            console.error("Error subiendo el PDF:", uploadErr);
+          } finally {
+            setUploadingPdf(false);
+          }
+        }, 500);
       } else {
         alert("Error al confirmar firma: " + (data.error || "Respuesta inválida"));
       }
@@ -249,7 +305,41 @@ export default function SignaturePage() {
 
   // Renderiza el recibo oficial de alta fidelidad basado exactamente en la captura provista
   const renderOfficialReceipt = () => {
-    if (!employee) return null;
+    if (!employee || !constanciaData) return null;
+
+    const emp = employee;
+    const depto = emp?.departamento?.nombre || "General";
+    const empresa = emp?.departamento?.empresa?.nombre || "Importaciones CRESGO, S.A.";
+    const nitEmpresa = emp?.departamento?.empresa?.nit || "6906818-6";
+    const direccionEmpresa = emp?.departamento?.empresa?.direccion || "";
+    const telefonoEmpresa = emp?.departamento?.empresa?.telefono || "";
+
+    const details = constanciaData.detalle_constancia || [];
+    const incomes = details
+      .filter((d: any) => d.concepto_pago?.tipo === "INGRESO" && d.concepto_pago?.codigo !== "TOT_ING")
+      .sort((a: any, b: any) => (a.concepto_pago?.orden_display ?? 0) - (b.concepto_pago?.orden_display ?? 0));
+    const deductions = details
+      .filter((d: any) => d.concepto_pago?.tipo === "DESCUENTO" && d.concepto_pago?.codigo !== "TOT_DES")
+      .sort((a: any, b: any) => (a.concepto_pago?.orden_display ?? 0) - (b.concepto_pago?.orden_display ?? 0));
+
+    const resRaw = constanciaData.resumen_constancia;
+    const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
+    const totalIng = parseFloat(res.total_ingresos.toString());
+    const totalDesc = parseFloat(res.total_descuentos.toString());
+    const liquido = parseFloat(res.liquido_recibir.toString());
+
+    const retRaw = constanciaData.retencion_isr;
+    const retencion = (Array.isArray(retRaw) ? retRaw[0] : retRaw) || { renta_acreditada: 0, monto_retenido: 0 };
+
+    const dateStr = constanciaData.fecha_emision
+      ? new Date(constanciaData.fecha_emision).toLocaleDateString("es-GT", { day: "numeric", month: "long", year: "numeric" })
+      : "29 de abril de 2026";
+
+    const netPayWords = numeroALetras(liquido);
+
+    const mainAcct = emp.cuenta_bancaria_empleado?.find((a: any) => a.principal && a.activa) ||
+      emp.cuenta_bancaria_empleado?.find((a: any) => a.activa) ||
+      (constanciaData.banco_deposito ? { banco: constanciaData.banco_deposito, numero_cuenta: constanciaData.cuenta_deposito } : null);
 
     return (
       <div id="official-receipt" className="bg-white text-black font-mono text-[11px] leading-relaxed p-6 border border-black shadow-sm w-full print:border-none print:shadow-none print:p-0 print:m-0 print:text-[10px]">
@@ -257,18 +347,16 @@ export default function SignaturePage() {
         <div className="space-y-1 pb-4 text-left">
           <div className="flex">
             <span className="w-28 flex-shrink-0 font-bold">Recibí de:</span>
-            <span className="flex-1">Importaciones CRESGO, S.A.</span>
+            <span className="flex-1">{empresa}</span>
           </div>
           <div className="flex">
             <span className="w-28 flex-shrink-0 font-bold">La cantidad de:</span>
-            <span className="flex-1 font-bold uppercase text-[10px]">CUATRO MIL NOVECIENTOS OCHO QUETZALES CON 50/100</span>
+            <span className="flex-1 font-bold uppercase text-[10px]">{netPayWords}</span>
           </div>
           <div className="flex">
             <span className="w-28 flex-shrink-0 font-bold">En concepto de:</span>
             <span className="flex-1 text-justify">
-              Salario ordinario correspondiente al período del 16-04-2026 al 30-04-2026, el cual se detalla a
-              continuación, aceptando los descuentos que en este pago se me realizan dándolos por válidos y
-              buenos.
+              {constanciaData.texto_concepto}
             </span>
           </div>
         </div>
@@ -280,26 +368,10 @@ export default function SignaturePage() {
             <div>
               <h4 className="font-bold border-b border-black pb-0.5 mb-2 uppercase tracking-wide text-left">INGRESOS</h4>
               <div className="space-y-1 text-left">
-                <div className="flex justify-between">
-                  <span>Salario Ordinario</span>
-                  <span className="font-bold">5,000.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Bonificación Incentivo D.37-2001</span>
-                  <span className="font-bold">350.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Anticipo sobre salario</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Otros ingresos</span>
-                  <span className="font-bold">300.00</span>
-                </div>
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex justify-between select-none opacity-0">
-                    <span>-</span>
-                    <span>0.00</span>
+                {incomes.map((d: any) => (
+                  <div key={d.id_detalle} className="flex justify-between">
+                    <span>{d.concepto_pago?.nombre || "Ingreso"}</span>
+                    <span className="font-bold">{parseFloat(d.monto).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -307,7 +379,7 @@ export default function SignaturePage() {
             <div className="border-t border-black pt-1 mt-2">
               <div className="flex justify-between font-bold border-b-4 border-double border-black pb-0.5">
                 <span>TOTAL INGRESOS</span>
-                <span>5,650.00</span>
+                <span>{totalIng.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -317,44 +389,18 @@ export default function SignaturePage() {
             <div>
               <h4 className="font-bold border-b border-black pb-0.5 mb-2 uppercase tracking-wide text-left">DESCUENTOS</h4>
               <div className="space-y-1 text-left">
-                <div className="flex justify-between">
-                  <span>Cuota Laboral IGSS</span>
-                  <span className="font-bold">241.50</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>ISR Empleados 2026</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Anticipo a empleado</span>
-                  <span className="font-bold">500.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Parqueos</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Seguro médico</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Otros descuentos</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Embargos</span>
-                  <span className="font-bold">0.00</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Boleto de ornato 2026</span>
-                  <span className="font-bold">0.00</span>
-                </div>
+                {deductions.map((d: any) => (
+                  <div key={d.id_detalle} className="flex justify-between">
+                    <span>{d.concepto_pago?.nombre || "Descuento"}</span>
+                    <span className="font-bold">{parseFloat(d.monto).toFixed(2)}</span>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="border-t border-black pt-1 mt-2">
               <div className="flex justify-between font-bold border-b-4 border-double border-black pb-0.5">
                 <span>TOTAL DESCUENTOS</span>
-                <span>741.50</span>
+                <span>{totalDesc.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -365,22 +411,22 @@ export default function SignaturePage() {
           <div className="w-64 space-y-1 border-t border-black pt-2 text-left">
             <div className="flex justify-between text-[10px]">
               <span>Total de Ingresos</span>
-              <span>5,650.00</span>
+              <span>{totalIng.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-[10px]">
               <span>(-) Total de Descuentos</span>
-              <span>741.50</span>
+              <span>{totalDesc.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-bold text-xs pt-1 border-t border-black border-b-4 border-double border-black pb-0.5">
               <span>Líquido Recibido</span>
-              <span>4,908.50</span>
+              <span>{liquido.toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         {/* Date */}
         <div className="text-center py-6 font-bold">
-          Guatemala, {signedAt ? signedAt.split(" ")[0] : "29 de abril de 2026"}
+          Guatemala, {dateStr}
         </div>
 
         {/* Constancia de Retención ISR Banner */}
@@ -390,16 +436,16 @@ export default function SignaturePage() {
           </div>
           <div className="grid grid-cols-3 gap-2 p-3 text-[10px] leading-relaxed text-left border-t border-black">
             <div>
-              <p><span className="font-bold">Patrono:</span> Importaciones CRESGO, S.A.</p>
-              <p><span className="font-bold">Empleado:</span> {employee.nombre} {employee.apellido}</p>
+              <p><span className="font-bold">Patrono:</span> {empresa}</p>
+              <p><span className="font-bold">Empleado:</span> {emp.nombre} {emp.apellido}</p>
             </div>
             <div>
-              <p><span className="font-bold">NIT:</span> 6906818-6</p>
-              <p><span className="font-bold">NIT/CUI:</span> {employee.cui || "xxxxxxxx-x"}</p>
+              <p><span className="font-bold">NIT:</span> {nitEmpresa}</p>
+              <p><span className="font-bold">NIT/CUI:</span> {emp.cui || "xxxxxxxx-x"}</p>
             </div>
             <div>
-              <p><span className="font-bold">Renta Acreditada:</span> 350,000.00</p>
-              <p><span className="font-bold">Monto Retenido:</span> -</p>
+              <p><span className="font-bold">Renta Acreditada:</span> {parseFloat(retencion.renta_acreditada || 0).toFixed(2)}</p>
+              <p><span className="font-bold">Monto Retenido:</span> {parseFloat(retencion.monto_retenido || 0).toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -407,9 +453,9 @@ export default function SignaturePage() {
         {/* Bottom Signature Row */}
         <div className="grid grid-cols-2 gap-8 pt-12 items-end">
           {/* Signature Line */}
-          <div className="relative pt-8 text-left">
+          <div className="relative pt-14 text-left">
             {savedSignatureData && (
-              <div className="absolute left-0 bottom-5 w-48 h-16 flex items-center justify-start overflow-hidden">
+              <div className="absolute left-0 bottom-[38px] w-48 h-16 flex items-center justify-start overflow-hidden">
                 <img
                   src={savedSignatureData}
                   alt="Firma del empleado"
@@ -418,14 +464,16 @@ export default function SignaturePage() {
               </div>
             )}
             <div className="border-t border-black pt-1">
-              <p className="font-bold">F) {employee.nombre} {employee.apellido}</p>
-              <p className="text-[9px]">CUI: {employee.cui || "2994 82910 0101"}</p>
+              <p className="font-bold">F) {emp.nombre} {emp.apellido}</p>
+              <p className="text-[9px]">CUI: {emp.cui || "xxxxxxxxxxxxx"}</p>
             </div>
           </div>
 
           {/* Deposit Info */}
           <div className="text-right pb-1 text-[10px]">
-            <p className="font-bold">Depósito a cuenta Banco Industrial No. 00-00000-1</p>
+            <p className="font-bold">
+              {mainAcct ? `Depósito a cuenta ${mainAcct.banco} No. ${mainAcct.numero_cuenta}` : "Pago en efectivo / cheque"}
+            </p>
           </div>
         </div>
       </div>
@@ -457,7 +505,7 @@ export default function SignaturePage() {
 
       // 2. Clonar el elemento del recibo oficial
       const clonedReceipt = receiptElement.cloneNode(true) as HTMLElement;
-      
+
       // Asegurarnos de remover clases específicas de impresión que puedan ocultarlo
       clonedReceipt.className = clonedReceipt.className.replace("print:hidden", "");
 
@@ -508,7 +556,7 @@ export default function SignaturePage() {
               .pt-3 { padding-top: 12px; }
               .pt-4 { padding-top: 16px; }
               .pt-12 { padding-top: 48px; }
-              .pt-8 { padding-top: 32px; }
+              .pt-14 { padding-top: 56px; }
               .pt-1 { padding-top: 4px; }
               .pb-1 { padding-bottom: 4px; }
               .pr-4 { padding-right: 16px; }
@@ -533,7 +581,7 @@ export default function SignaturePage() {
               .relative { position: relative; }
               .absolute { position: absolute; }
               .left-0 { left: 0px; }
-              .bottom-5 { bottom: 20px; }
+              .bottom-\\[38px\\] { bottom: 38px; }
               .overflow-hidden { overflow: hidden; }
               .mix-blend-multiply { mix-blend-mode: multiply; }
               .max-h-full { max-height: 100%; }
@@ -569,7 +617,7 @@ export default function SignaturePage() {
       document.body.removeChild(iframe);
 
       const imgData = canvas.toDataURL("image/png");
-      
+
       // 7. Crear documento PDF tamaño A4
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -605,11 +653,216 @@ export default function SignaturePage() {
     }
   };
 
+  const generateAndUploadSignedPdf = async () => {
+    const receiptElement = document.getElementById("official-receipt");
+    if (!receiptElement) return;
+
+    try {
+      const html2canvas = (await import("html2canvas-pro")).default;
+      const { jsPDF } = await import("jspdf");
+
+      // 1. Crear un iframe oculto en el DOM
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.width = "800px";
+      iframe.style.height = "0px";
+      iframe.style.border = "none";
+      iframe.style.visibility = "hidden";
+      document.body.appendChild(iframe);
+
+      const iframeDoc = iframe.contentWindow?.document || iframe.contentDocument;
+      if (!iframeDoc) throw new Error("No se pudo acceder al documento del iframe");
+
+      // 2. Clonar el elemento del recibo oficial
+      const clonedReceipt = receiptElement.cloneNode(true) as HTMLElement;
+      clonedReceipt.className = clonedReceipt.className.replace("print:hidden", "");
+
+      // 3. Escribir HTML
+      iframeDoc.open();
+      iframeDoc.write(`
+        <html>
+          <head>
+            <style>
+              body {
+                margin: 0;
+                padding: 24px;
+                background-color: white;
+                color: black;
+                font-family: monospace;
+                font-size: 11px;
+                line-height: 1.6;
+              }
+              .flex { display: flex; }
+              .flex-1 { flex: 1; }
+              .flex-shrink-0 { flex-shrink: 0; }
+              .flex-col { flex-direction: column; }
+              .justify-between { justify-content: space-between; }
+              .justify-start { justify-content: flex-start; }
+              .justify-end { justify-content: flex-end; }
+              .items-end { align-items: flex-end; }
+              .items-center { align-items: center; }
+              .grid { display: grid; }
+              .grid-cols-2 { grid-template-columns: 1fr 1fr; }
+              .grid-cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+              .gap-2 { gap: 8px; }
+              .gap-8 { gap: 32px; }
+              .gap-x-8 { column-gap: 32px; }
+              .border { border: 1px solid black; }
+              .border-t { border-top: 1px solid black; }
+              .border-b { border-bottom: 1px solid black; }
+              .border-r { border-right: 1px solid black; }
+              .border-black { border-color: black; }
+              .border-dashed { border-style: dashed; }
+              .border-black\\/30 { border-color: rgba(0,0,0,0.3); }
+              .border-b-4 { border-bottom-width: 4px; }
+              .border-double { border-bottom-style: double; }
+              .w-28 { width: 112px; }
+              .w-64 { width: 256px; }
+              .w-48 { width: 192px; }
+              .h-16 { height: 64px; }
+              .pb-4 { padding-bottom: 16px; }
+              .pt-3 { padding-top: 12px; }
+              .pt-4 { padding-top: 16px; }
+              .pt-12 { padding-top: 48px; }
+              .pt-14 { padding-top: 56px; }
+              .pt-1 { padding-top: 4px; }
+              .pb-1 { padding-bottom: 4px; }
+              .pr-4 { padding-right: 16px; }
+              .p-6 { padding: 24px; }
+              .p-3 { padding: 12px; }
+              .mt-2 { margin-top: 8px; }
+              .mb-2 { margin-top: 8px; }
+              .py-6 { padding-top: 24px; padding-bottom: 24px; }
+              .py-1 { padding-top: 4px; padding-bottom: 4px; }
+              .font-bold { font-weight: bold; }
+              .text-left { text-align: left; }
+              .text-right { text-align: right; }
+              .text-center { text-align: center; }
+              .text-justify { text-align: justify; }
+              .uppercase { text-transform: uppercase; }
+              .text-xs { font-size: 12px; }
+              .text-\\[10px\\] { font-size: 10px; }
+              .text-\\[9px\\] { font-size: 9px; }
+              .bg-black { background-color: black; color: white; }
+              .bg-white { background-color: white; }
+              .text-white { color: white; }
+              .relative { position: relative; }
+              .absolute { position: absolute; }
+              .left-0 { left: 0px; }
+              .bottom-\\[38px\\] { bottom: 38px; }
+              .overflow-hidden { overflow: hidden; }
+              .mix-blend-multiply { mix-blend-mode: multiply; }
+              .max-h-full { max-height: 100%; }
+              .max-w-full { max-width: 100%; }
+              .object-contain { object-fit: contain; }
+              .pointer-events-none { pointer-events: none; }
+            </style>
+          </head>
+          <body>
+            <div style="width: 760px;">
+              ${clonedReceipt.outerHTML}
+            </div>
+          </body>
+        </html>
+      `);
+      iframeDoc.close();
+
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const targetElement = iframeDoc.getElementById("official-receipt");
+      if (!targetElement) throw new Error("No se encontró el recibo en el iframe");
+
+      const canvas = await html2canvas(targetElement, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+
+      document.body.removeChild(iframe);
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const pdfBlob = pdf.output("blob");
+
+      const fileName = `${constanciaData.numero_constancia}.pdf`;
+      const filePath = `${constanciaData.id_periodo}/${fileName}`;
+
+      const { error: uploadErr } = await supabase.storage
+        .from("comprobantes")
+        .upload(filePath, pdfBlob, {
+          contentType: "application/pdf",
+          upsert: true,
+          cacheControl: "0",
+        });
+
+      if (uploadErr) throw uploadErr;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("comprobantes")
+        .getPublicUrl(filePath);
+
+      const { error: upsertErr } = await supabase
+        .from("comprobante_constancia")
+        .upsert({
+          id_constancia: constanciaData.id_constancia,
+          url_documento: publicUrl,
+          firmado: true,
+          actualizado_en: new Date().toISOString(),
+        }, { onConflict: "id_constancia" });
+
+      if (upsertErr) throw upsertErr;
+      
+      console.log("PDF firmado generado y subido.");
+    } catch (err) {
+      console.error("Error al generar y subir el PDF firmado:", err);
+    }
+  };
+
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
         <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-body-base text-on-surface-variant font-medium">Cargando constancia de pago...</p>
+
+        {debugTimer && (
+          <div className="mt-8 p-4 bg-surface-container border border-outline rounded-xl text-left text-xs max-w-sm w-full mx-auto space-y-2">
+            <p className="font-bold text-error mb-1 text-sm flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[18px]">info</span>
+              Información de Diagnóstico (si no carga)
+            </p>
+            <div className="space-y-1 font-mono text-[10px] text-on-surface-variant">
+              <p><strong>URL Token:</strong> {token ? `${token.substring(0, 12)}...` : "VACÍO / NO DETECTADO"}</p>
+              <p><strong>Route Params:</strong> {JSON.stringify(routeParams)}</p>
+              <p><strong>Origin:</strong> {typeof window !== "undefined" ? window.location.origin : "ssr"}</p>
+              <p className="pt-2 italic text-[9px] leading-relaxed border-t border-outline/50 mt-2">
+                * Si el parámetro de la URL está vacío pero la barra de direcciones lo muestra, es probable que tu navegador esté utilizando una versión anterior de JavaScript guardada en caché. Intenta recargar la página limpiando la caché o abre una pestaña de incógnito.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -664,75 +917,79 @@ export default function SignaturePage() {
             <p className="text-body-base text-on-surface-variant font-medium">
               ID: {employee?.id_empleado} • {employee?.puesto || "Empleado"}
             </p>
-            <p className="text-label-caps text-primary mt-1 font-bold">PERIODO: 01/10/2023 - 15/10/2023</p>
+            {constanciaData && (
+              <p className="text-label-caps text-primary mt-1 font-bold">
+                PERIODO: {constanciaData.periodo_pago?.fecha_inicio ? new Date(constanciaData.periodo_pago.fecha_inicio).toLocaleDateString("es-GT") : ""} - {constanciaData.periodo_pago?.fecha_fin ? new Date(constanciaData.periodo_pago.fecha_fin).toLocaleDateString("es-GT") : ""}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Pay Stub Details Card (Only shown during active draft state) */}
-        {status === "active" && (
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
-            <div className="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
-              <span className="font-bold text-on-surface">Detalle de Nómina</span>
-              <span className="text-body-sm px-2.5 py-1 bg-primary/10 text-primary rounded-full font-bold">
-                Borrador de Recibo
-              </span>
+        {status === "active" && constanciaData && (() => {
+          const details = constanciaData.detalle_constancia || [];
+          const incomes = details.filter((d: any) => d.concepto_pago?.tipo === "INGRESO" && d.concepto_pago?.codigo !== "TOT_ING");
+          const deductions = details.filter((d: any) => d.concepto_pago?.tipo === "DESCUENTO" && d.concepto_pago?.codigo !== "TOT_DES");
+
+          const resRaw = constanciaData.resumen_constancia;
+          const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
+          const totalIng = parseFloat(res.total_ingresos.toString());
+          const totalDesc = parseFloat(res.total_descuentos.toString());
+          const liquido = parseFloat(res.liquido_recibir.toString());
+
+          return (
+            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+              <div className="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+                <span className="font-bold text-on-surface">Detalle de Nómina</span>
+                <span className="text-body-sm px-2.5 py-1 bg-primary/10 text-primary rounded-full font-bold">
+                  Borrador de Recibo
+                </span>
+              </div>
+              <div className="p-0">
+                {/* Incomes Section */}
+                <div className="px-6 py-4">
+                  <h3 className="text-label-caps text-on-surface-variant mb-3 font-bold">INGRESOS</h3>
+                  <div className="space-y-3">
+                    {incomes.map((d: any) => (
+                      <div key={d.id_detalle} className="flex justify-between items-center">
+                        <span className="text-body-base text-on-surface-variant font-medium">{d.concepto_pago?.nombre}</span>
+                        <span className="font-data-tabular text-on-surface font-semibold">Q {parseFloat(d.monto).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mx-6 border-t border-outline-variant/50"></div>
+                {/* Deductions Section */}
+                <div className="px-6 py-4 bg-surface-container-lowest">
+                  <h3 className="text-label-caps text-on-surface-variant mb-3 font-bold">DESCUENTOS</h3>
+                  <div className="space-y-3">
+                    {deductions.map((d: any) => (
+                      <div key={d.id_detalle} className="flex justify-between items-center text-error">
+                        <span className="text-body-base font-medium">{d.concepto_pago?.nombre}</span>
+                        <span className="font-data-tabular font-bold">Q {parseFloat(d.monto).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Summary Section */}
+                <div className="p-6 bg-surface-container-low mt-2 border-t border-outline-variant">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-body-base text-on-surface-variant font-medium">Total Ingresos</span>
+                    <span className="font-data-tabular text-on-surface font-semibold">Q {totalIng.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-body-base text-on-surface-variant font-medium">Total Descuentos</span>
+                    <span className="font-data-tabular text-error font-semibold">Q {totalDesc.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t border-outline">
+                    <span className="text-h3 font-h3 text-on-surface font-bold">Líquido a Recibir</span>
+                    <span className="text-h2 font-h2 text-primary font-bold">Q {liquido.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="p-0">
-              {/* Incomes Section */}
-              <div className="px-6 py-4">
-                <h3 className="text-label-caps text-on-surface-variant mb-3 font-bold">INGRESOS</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-body-base text-on-surface-variant font-medium">Sueldo Base</span>
-                    <span className="font-data-tabular text-on-surface font-semibold">Q 6,500.00</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-body-base text-on-surface-variant font-medium">Bonificación Incentivo (Dto. 37-2001)</span>
-                    <span className="font-data-tabular text-on-surface font-semibold">Q 250.00</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-body-base text-on-surface-variant font-medium">Horas Extras (12 hrs)</span>
-                    <span className="font-data-tabular text-on-surface font-semibold">Q 485.50</span>
-                  </div>
-                </div>
-              </div>
-              <div className="mx-6 border-t border-outline-variant/50"></div>
-              {/* Deductions Section */}
-              <div className="px-6 py-4 bg-surface-container-lowest">
-                <h3 className="text-label-caps text-on-surface-variant mb-3 font-bold">DESCUENTOS</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center text-error">
-                    <span className="text-body-base font-medium">Cuota Laboral IGSS (4.83%)</span>
-                    <span className="font-data-tabular font-bold">Q 313.95</span>
-                  </div>
-                  <div className="flex justify-between items-center text-error">
-                    <span className="text-body-base font-medium">Impuesto sobre la Renta (ISR)</span>
-                    <span className="font-data-tabular font-bold">Q 125.00</span>
-                  </div>
-                  <div className="flex justify-between items-center text-error">
-                    <span className="text-body-base font-medium">Anticipo de Sueldo</span>
-                    <span className="font-data-tabular font-bold">Q 500.00</span>
-                  </div>
-                </div>
-              </div>
-              {/* Summary Section */}
-              <div className="p-6 bg-surface-container-low mt-2 border-t border-outline-variant">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-body-base text-on-surface-variant font-medium">Total Ingresos</span>
-                  <span className="font-data-tabular text-on-surface font-semibold">Q 7,235.50</span>
-                </div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-body-base text-on-surface-variant font-medium">Total Descuentos</span>
-                  <span className="font-data-tabular text-error font-semibold">Q 938.95</span>
-                </div>
-                <div className="flex justify-between items-center pt-4 border-t border-outline">
-                  <span className="text-h3 font-h3 text-on-surface font-bold">Líquido a Recibir</span>
-                  <span className="text-h2 font-h2 text-primary font-bold">Q 6,296.55</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Action Button (only if not signed yet) */}
         {status === "active" && (
@@ -800,9 +1057,9 @@ export default function SignaturePage() {
         <footer className="pt-8 border-t border-outline-variant text-center print:hidden">
           <p className="text-body-sm text-on-surface-variant font-medium">¿Tiene dudas sobre su pago? Contacte a Recursos Humanos</p>
           <div className="mt-2 flex justify-center gap-6">
-            <a className="text-primary font-bold text-body-sm flex items-center gap-1 hover:underline" href="mailto:rrhh@cresgo.com.gt">
+            <a className="text-primary font-bold text-body-sm flex items-center gap-1 hover:underline" href="mailto:yvan.sierra@cresgo.com">
               <span className="material-symbols-outlined text-[16px]">mail</span>
-              rrhh@cresgo.com.gt
+              yvan.sierra@cresgo.com
             </a>
             <a className="text-primary font-bold text-body-sm flex items-center gap-1 hover:underline" href="tel:+50223456789">
               <span className="material-symbols-outlined text-[16px]">phone</span>
@@ -846,7 +1103,7 @@ export default function SignaturePage() {
                 <span className="text-outline-variant font-label-caps select-none pointer-events-none absolute z-0 uppercase tracking-wider text-xs">
                   Área de Firma Táctil
                 </span>
-                
+
                 <canvas
                   ref={canvasRef}
                   onMouseDown={startDrawing}
@@ -891,6 +1148,15 @@ export default function SignaturePage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {uploadingPdf && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-md p-6 text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-6"></div>
+          <h2 className="text-h2 font-h2 text-on-surface font-bold mb-2">Guardando Documento Firmado</h2>
+          <p className="text-body-base text-on-surface-variant max-w-sm">
+            Estamos aplicando su firma al recibo digital y guardando la constancia en el servidor. Por favor, no cierre esta ventana.
+          </p>
         </div>
       )}
     </div>
