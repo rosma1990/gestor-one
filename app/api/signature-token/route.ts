@@ -124,10 +124,17 @@ export async function GET(request: NextRequest) {
       const localhostUrl = `http://localhost:${port}/firma/${encryptedToken}`;
       const localUrl = `http://${localIp}:${port}/firma/${encryptedToken}`;
 
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+      const formattedSiteUrl = siteUrl 
+        ? (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`)
+        : `http://localhost:${port}`;
+      const productionUrl = `${formattedSiteUrl}/firma/${encryptedToken}`;
+
       return NextResponse.json({
         token: encryptedToken,
         localhostUrl,
         localUrl,
+        productionUrl,
         id_empleado: idEmpleado,
         id_constancia: Number(idConstancia)
       });
@@ -273,6 +280,12 @@ export async function POST(request: NextRequest) {
     const localhostUrl = `http://localhost:${port}/firma/${encryptedToken}`;
     const localUrl = `http://${localIp}:${port}/firma/${encryptedToken}`;
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
+    const formattedSiteUrl = siteUrl 
+      ? (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`)
+      : `http://localhost:${port}`;
+    const productionUrl = `${formattedSiteUrl}/firma/${encryptedToken}`;
+
     // Mostrar de forma temporal la URL en consola
     console.log("\n=======================================================");
     console.log(`🔑 NUEVA CONSTANCIA DE FIRMA GENERADA (PERSISTIDA Y CIFRADA)`);
@@ -281,12 +294,14 @@ export async function POST(request: NextRequest) {
     console.log(`Token UUID: ${rawToken}`);
     console.log(`Localhost URL: ${localhostUrl}`);
     console.log(`Celular (Misma Wi-Fi): ${localUrl}`);
+    console.log(`Producción (Vercel): ${productionUrl}`);
     console.log("=======================================================\n");
 
     return NextResponse.json({
       token: encryptedToken,
       localhostUrl,
       localUrl,
+      productionUrl,
       id_empleado,
       id_constancia: resolvedConstanciaId
     });

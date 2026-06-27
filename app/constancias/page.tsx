@@ -127,6 +127,7 @@ export default function Constancias() {
     nombre: string;
     localUrl: string;
     localhostUrl: string;
+    productionUrl?: string;
   } | null>(null);
   const [fetchingUrls, setFetchingUrls] = useState(false);
   
@@ -911,6 +912,7 @@ export default function Constancias() {
           nombre: `${item.empleado?.nombre} ${item.empleado?.apellido}`,
           localUrl: data.localUrl,
           localhostUrl: data.localhostUrl,
+          productionUrl: data.productionUrl,
         });
         setShowUrlsModal(true);
       } else {
@@ -1578,6 +1580,31 @@ export default function Constancias() {
               </div>
 
               <div className="space-y-4">
+                {/* Enlace de Producción (Vercel) */}
+                {selectedUrlsData.productionUrl && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">Enlace de Producción (Vercel)</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        readOnly
+                        value={selectedUrlsData.productionUrl}
+                        className="flex-1 bg-background border border-outline-variant rounded-lg px-3 py-2 text-body-sm focus:outline-none select-all font-mono"
+                      />
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(selectedUrlsData.productionUrl || "");
+                          alert("Enlace copiado al portapapeles");
+                        }}
+                        className="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all text-body-sm flex items-center gap-1 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                        Copiar
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Enlace Local (Celular) */}
                 <div className="space-y-1.5">
                   <label className="text-xs text-on-surface-variant font-bold uppercase tracking-wider block">Enlace de Red Local (Celulares en la misma Wi-Fi)</label>
