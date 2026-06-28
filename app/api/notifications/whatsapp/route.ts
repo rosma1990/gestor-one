@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     };
 
     for (const notif of notifications) {
-      const { telefono, nombre, periodo, url, id_empresa } = notif;
+      const { telefono, nombre, periodo, url, id_empresa, liquido, concepto, token } = notif;
       
       if (!telefono) {
         results.fallidos++;
@@ -96,7 +96,12 @@ export async function POST(request: NextRequest) {
         console.log(`Enlace de Firma: ${url}`);
         if (templateName) {
           console.log(`Modo: Plantilla Oficial [${templateName}] (${templateLang})`);
-          console.log(`Variables: [1: "${nombre}", 2: "${periodo}", 3: "${url}"]`);
+          if (templateName === "payment_confirmation_3") {
+            console.log(`Variables Body: [1 (Nombre): "${nombre}", 2 (Líquido): "${liquido}", 3 (Concepto): "${concepto}"]`);
+            console.log(`Variable Botón (Token): "${token}"`);
+          } else {
+            console.log(`Variables: [1: "${nombre}", 2: "${periodo}", 3: "${url}"]`);
+          }
         } else {
           console.log(`Modo: Texto Libre`);
           console.log(`Mensaje: ${customMessage}`);
@@ -110,39 +115,73 @@ export async function POST(request: NextRequest) {
 
       // Modo Real: Meta Cloud API
       try {
-        const payload = templateName
-          ? {
-              messaging_product: "whatsapp",
-              recipient_type: "individual",
-              to: formattedPhone,
-              type: "template",
-              template: {
-                name: templateName,
-                language: {
-                  code: templateLang,
+        let payload: any;
+        if (templateName === "payment_confirmation_3") {
+          payload = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: formattedPhone,
+            type: "template",
+            template: {
+              name: templateName,
+              language: {
+                code: templateLang,
+              },
+              components: [
+                {
+                  type: "body",
+                  parameters: [
+                    { type: "text", text: nombre },
+                    { type: "text", text: liquido || "" },
+                    { type: "text", text: concepto || "" },
+                  ],
                 },
-                components: [
-                  {
-                    type: "body",
-                    parameters: [
-                      { type: "text", text: nombre },
-                      { type: "text", text: periodo },
-                      { type: "text", text: url },
-                    ],
-                  },
-                ],
+                {
+                  type: "button",
+                  sub_type: "url",
+                  index: "0",
+                  parameters: [
+                    { type: "text", text: token || "" },
+                  ],
+                },
+              ],
+            },
+          };
+        } else if (templateName) {
+          payload = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: formattedPhone,
+            type: "template",
+            template: {
+              name: templateName,
+              language: {
+                code: templateLang,
               },
-            }
-          : {
-              messaging_product: "whatsapp",
-              recipient_type: "individual",
-              to: formattedPhone,
-              type: "text",
-              text: {
-                preview_url: true,
-                body: customMessage,
-              },
-            };
+              components: [
+                {
+                  type: "body",
+                  parameters: [
+                    { type: "text", text: nombre },
+                    { type: "text", text: periodo },
+                    { type: "text", text: url },
+                  ],
+                },
+              ],
+            },
+          };
+        } else {
+          payload = {
+            messaging_product: "whatsapp",
+            recipient_type: "individual",
+            to: formattedPhone,
+            type: "text",
+            text: {
+              preview_url: true,
+              body: customMessage,
+            },
+          };
+        }
 
         const res = await fetch(`https://graph.facebook.com/v19.0/${whatsappPhoneId}/messages`, {
           method: "POST",
