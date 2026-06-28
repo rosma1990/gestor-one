@@ -8,15 +8,15 @@ import { encryptToken, decryptToken } from "@/lib/crypto";
 function getLocalIp(): string {
   const interfaces = os.networkInterfaces();
   const keys = Object.keys(interfaces);
-  
+
   // 1. Intentar buscar en interfaces inalámbricas (Wi-Fi / Wireless)
-  const wifiKeys = keys.filter(name => 
-    name.toLowerCase().includes("wi-fi") || 
-    name.toLowerCase().includes("wifi") || 
+  const wifiKeys = keys.filter(name =>
+    name.toLowerCase().includes("wi-fi") ||
+    name.toLowerCase().includes("wifi") ||
     name.toLowerCase().includes("wireless") ||
     name.toLowerCase().includes("inalámbrica")
   );
-  
+
   for (const name of wifiKeys) {
     for (const iface of interfaces[name] || []) {
       if (iface.family === "IPv4" && !iface.internal) {
@@ -28,13 +28,13 @@ function getLocalIp(): string {
   // 2. Intentar buscar en otras interfaces físicas, excluyendo las virtuales de VirtualBox, VMware o WSL
   const otherKeys = keys.filter(name => {
     const lname = name.toLowerCase();
-    return !lname.includes("virtualbox") && 
-           !lname.includes("vmware") && 
-           !lname.includes("wsl") && 
-           !lname.includes("loopback") &&
-           !wifiKeys.includes(name);
+    return !lname.includes("virtualbox") &&
+      !lname.includes("vmware") &&
+      !lname.includes("wsl") &&
+      !lname.includes("loopback") &&
+      !wifiKeys.includes(name);
   });
-  
+
   for (const name of otherKeys) {
     for (const iface of interfaces[name] || []) {
       if (iface.family === "IPv4" && !iface.internal) {
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
       const localUrl = `http://${localIp}:${port}/firma/${encryptedToken}`;
 
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
-      const formattedSiteUrl = siteUrl 
+      const formattedSiteUrl = siteUrl
         ? (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`)
         : `http://localhost:${port}`;
       const productionUrl = `${formattedSiteUrl}/firma/${encryptedToken}`;
@@ -243,8 +243,8 @@ export async function POST(request: NextRequest) {
       }
 
       if (!latestConstancia) {
-        return NextResponse.json({ 
-          error: "El colaborador no tiene constancias de pago activas en el sistema para poder firmar." 
+        return NextResponse.json({
+          error: "El colaborador no tiene constancias de pago activas en el sistema para poder firmar."
         }, { status: 400 });
       }
 
@@ -281,7 +281,7 @@ export async function POST(request: NextRequest) {
     const localUrl = `http://${localIp}:${port}/firma/${encryptedToken}`;
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
-    const formattedSiteUrl = siteUrl 
+    const formattedSiteUrl = siteUrl
       ? (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`)
       : `http://localhost:${port}`;
     const productionUrl = `${formattedSiteUrl}/firma/${encryptedToken}`;
