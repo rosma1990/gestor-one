@@ -854,13 +854,20 @@ export default function Constancias() {
               const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
               const liquidoVal = parseFloat(res.liquido_recibir.toString());
 
+              const isLocalhost = window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168.");
+              const resolvedUrl = isLocalhost
+                ? (tokenData.productionUrl && !tokenData.productionUrl.includes("localhost") 
+                    ? tokenData.productionUrl 
+                    : tokenData.localUrl)
+                : `${window.location.origin}/firma/${tokenData.token}`;
+
               notifications.push({
                 telefono: item.empleado.telefono,
                 nombre: `${item.empleado.nombre} ${item.empleado.apellido}`,
                 periodo: `${selectedPeriod?.mes} ${selectedPeriod?.anio}`,
                 liquido: `Q ${liquidoVal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
                 concepto: `${selectedPeriod?.tipo === "QUINCENAL" ? "Quincena" : "Mes"} de ${selectedPeriod?.mes} de ${selectedPeriod?.anio}`,
-                url: tokenData.productionUrl || tokenData.localUrl,
+                url: resolvedUrl,
                 token: tokenData.token,
                 id_empresa: item.id_empresa,
               });
@@ -1013,13 +1020,20 @@ export default function Constancias() {
       const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
       const liquidoVal = parseFloat(res.liquido_recibir.toString());
 
+      const isLocalhost = window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168.");
+      const resolvedUrl = isLocalhost
+        ? (tokenData.productionUrl && !tokenData.productionUrl.includes("localhost") 
+            ? tokenData.productionUrl 
+            : tokenData.localUrl)
+        : `${window.location.origin}/firma/${tokenData.token}`;
+
       const notification = {
         telefono: item.empleado.telefono,
         nombre: `${item.empleado.nombre} ${item.empleado.apellido}`,
         periodo: `${selectedPeriod?.mes} ${selectedPeriod?.anio}`,
         liquido: `Q ${liquidoVal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         concepto: `${selectedPeriod?.tipo === "QUINCENAL" ? "Quincena" : "Mes"} de ${selectedPeriod?.mes} de ${selectedPeriod?.anio}`,
-        url: tokenData.productionUrl || tokenData.localUrl,
+        url: resolvedUrl,
         token: tokenData.token,
         id_empresa: item.id_empresa
       };
