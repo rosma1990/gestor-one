@@ -143,6 +143,9 @@ export default function Constancias() {
   const [editValues, setEditValues] = useState<Record<number, number>>({});
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   
+  // WhatsApp notification sending state
+  const [isSendingWa, setIsSendingWa] = useState<number | null>(null);
+  
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -228,6 +231,7 @@ export default function Constancias() {
             cui,
             nit,
             puesto,
+            telefono,
             departamento (
               nombre,
               empresa (
@@ -846,12 +850,19 @@ export default function Constancias() {
           if (tokenRes.ok) {
             const tokenData = await tokenRes.json();
             if (item.empleado?.telefono) {
+              const resRaw = item.resumen_constancia;
+              const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
+              const liquidoVal = parseFloat(res.liquido_recibir.toString());
+
               notifications.push({
                 telefono: item.empleado.telefono,
                 nombre: `${item.empleado.nombre} ${item.empleado.apellido}`,
                 periodo: `${selectedPeriod?.mes} ${selectedPeriod?.anio}`,
-                url: tokenData.localUrl, // Enlace de red local (para celulares)
-                id_empresa: item.id_empresa, // ID de la empresa para configuración dinámica
+                liquido: `Q ${liquidoVal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                concepto: `${selectedPeriod?.tipo === "QUINCENAL" ? "Quincena" : "Mes"} de ${selectedPeriod?.mes} de ${selectedPeriod?.anio}`,
+                url: tokenData.productionUrl || tokenData.localUrl,
+                token: tokenData.token,
+                id_empresa: item.id_empresa,
               });
             }
           }
@@ -899,6 +910,154 @@ export default function Constancias() {
     } finally {
       setIsGeneratingZip(false);
       setZipProgress(null);
+    }
+  };
+
+  const handleSendWhatsApp = async (item: any) => {
+    if (!item.empleado?.telefono) {
+      setStatusMessage({ type: "error", text: "El empleado no tiene teléfono registrado." });
+      return;
+    }
+
+    setIsSendingWa(item.id_constancia);
+    setStatusMessage(null);
+
+    try {
+      let documentUrl = item.comprobante_constancia?.url_documento;
+
+      // 1. Si no tiene comprobante generado, generarlo y subirlo a storage
+      if (!documentUrl) {
+        setStatusMessage({ type: "success", text: "Generando comprobante PDF para el empleado..." });
+        
+        const html2canvas = (await import("html2canvas-pro")).default;
+        const { jsPDF } = await import("jspdf");
+
+        const container = document.createElement("div");
+        container.style.position = "absolute";
+        container.style.left = "-9999px";
+        container.style.top = "-9999px";
+        container.style.width = "760px";
+        container.style.background = "white";
+        container.style.color = "black";
+        container.style.padding = "24px";
+        document.body.appendChild(container);
+        container.innerHTML = getReceiptHtml(item);
+
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#ffffff",
+        });
+
+        document.body.removeChild(container);
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+        const pdfBlob = pdf.output("blob");
+
+        // Subir a Supabase Storage
+        const fileName = `${item.numero_constancia}.pdf`;
+        const filePath = `${item.id_periodo}/${fileName}`;
+
+        const { error: uploadErr } = await supabase.storage
+          .from("comprobantes")
+          .upload(filePath, pdfBlob, {
+            contentType: "application/pdf",
+            upsert: true,
+            cacheControl: "0",
+          });
+
+        if (uploadErr) throw uploadErr;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("comprobantes")
+          .getPublicUrl(filePath);
+
+        documentUrl = publicUrl;
+
+        // Guardar en comprobante_constancia
+        const { error: upsertErr } = await supabase
+          .from("comprobante_constancia")
+          .upsert({
+            id_constancia: item.id_constancia,
+            url_documento: publicUrl,
+            actualizado_en: new Date().toISOString(),
+          }, { onConflict: "id_constancia" });
+
+        if (upsertErr) throw upsertErr;
+      }
+
+      // 2. Generar/Obtener token de firma
+      setStatusMessage({ type: "success", text: "Generando token de firma digital..." });
+      const tokenRes = await fetch(`/api/signature-token?id_constancia=${item.id_constancia}`);
+      if (!tokenRes.ok) {
+        throw new Error("No se pudo obtener el enlace de firma.");
+      }
+      const tokenData = await tokenRes.json();
+
+      // 3. Formatear datos y enviar la notificación individual por WhatsApp
+      setStatusMessage({ type: "success", text: "Enviando notificación por WhatsApp..." });
+      
+      const resRaw = item.resumen_constancia;
+      const res = (Array.isArray(resRaw) ? resRaw[0] : resRaw) || { total_ingresos: 0, total_descuentos: 0, liquido_recibir: 0 };
+      const liquidoVal = parseFloat(res.liquido_recibir.toString());
+
+      const notification = {
+        telefono: item.empleado.telefono,
+        nombre: `${item.empleado.nombre} ${item.empleado.apellido}`,
+        periodo: `${selectedPeriod?.mes} ${selectedPeriod?.anio}`,
+        liquido: `Q ${liquidoVal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        concepto: `${selectedPeriod?.tipo === "QUINCENAL" ? "Quincena" : "Mes"} de ${selectedPeriod?.mes} de ${selectedPeriod?.anio}`,
+        url: tokenData.productionUrl || tokenData.localUrl,
+        token: tokenData.token,
+        id_empresa: item.id_empresa
+      };
+
+      const waRes = await fetch("/api/notifications/whatsapp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ notifications: [notification] }),
+      });
+
+      if (!waRes.ok) {
+        throw new Error("Error en la llamada a la API de WhatsApp");
+      }
+
+      const waData = await waRes.json();
+      if (waData.simulated) {
+        setStatusMessage({
+          type: "success",
+          text: "¡Notificación simulada con éxito! Revisa la consola del servidor."
+        });
+      } else {
+        setStatusMessage({
+          type: "success",
+          text: "¡Notificación de WhatsApp enviada con éxito!"
+        });
+      }
+
+      // Volver a cargar constancias para que se actualice el estado local de url_documento
+      if (selectedPeriodId) {
+        loadConstancias(selectedPeriodId);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setStatusMessage({ type: "error", text: "Fallo al enviar notificación: " + err.message });
+    } finally {
+      setIsSendingWa(null);
     }
   };
 
@@ -1241,6 +1400,32 @@ export default function Constancias() {
                                 title={item.anulada ? "No disponible (Anulada)" : "Ver Enlaces de Firma Digital"}
                               >
                                 <span className="material-symbols-outlined">link</span>
+                              </button>
+
+                              {/* Enviar WhatsApp */}
+                              <button 
+                                onClick={() => handleSendWhatsApp(item)}
+                                disabled={item.anulada || isSendingWa === item.id_constancia}
+                                className={`p-2 rounded-lg transition-all ${
+                                  item.anulada
+                                    ? "text-on-surface-variant/30 cursor-not-allowed"
+                                    : isSendingWa === item.id_constancia
+                                      ? "text-emerald-600/50 cursor-wait"
+                                      : "text-emerald-600 hover:bg-emerald-50 cursor-pointer"
+                                }`}
+                                title={
+                                  item.anulada 
+                                    ? "No disponible (Anulada)" 
+                                    : !item.empleado?.telefono 
+                                      ? "Sin teléfono registrado" 
+                                      : "Enviar Notificación por WhatsApp"
+                                }
+                              >
+                                {isSendingWa === item.id_constancia ? (
+                                  <div className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                ) : (
+                                  <span className="material-symbols-outlined">send</span>
+                                )}
                               </button>
 
                               {/* Descargar PDF */}
