@@ -1027,6 +1027,11 @@ export default function Constancias() {
             : tokenData.localUrl)
         : `${window.location.origin}/firma/${tokenData.token}`;
 
+      console.log("DEBUG - window.location.origin:", window.location.origin);
+      console.log("DEBUG - window.location.hostname:", window.location.hostname);
+      console.log("DEBUG - tokenData:", tokenData);
+      console.log("DEBUG - resolvedUrl to send:", resolvedUrl);
+
       const notification = {
         telefono: item.empleado.telefono,
         nombre: `${item.empleado.nombre} ${item.empleado.apellido}`,

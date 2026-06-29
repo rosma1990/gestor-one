@@ -455,7 +455,7 @@ export default function SignaturePage() {
           {/* Signature Line */}
           <div className="relative pt-14 text-left">
             {savedSignatureData && (
-              <div className="absolute left-0 bottom-[38px] w-48 h-16 flex items-center justify-start overflow-hidden">
+              <div className="absolute left-0 right-0 bottom-[52px] w-full h-16 flex items-center justify-center overflow-hidden">
                 <img
                   src={savedSignatureData}
                   alt="Firma del empleado"
@@ -530,6 +530,7 @@ export default function SignaturePage() {
               .flex-col { flex-direction: column; }
               .justify-between { justify-content: space-between; }
               .justify-start { justify-content: flex-start; }
+              .justify-center { justify-content: center; }
               .justify-end { justify-content: flex-end; }
               .items-end { align-items: flex-end; }
               .items-center { align-items: center; }
@@ -551,6 +552,7 @@ export default function SignaturePage() {
               .w-28 { width: 112px; }
               .w-64 { width: 256px; }
               .w-48 { width: 192px; }
+              .w-full { width: 100%; }
               .h-16 { height: 64px; }
               .pb-4 { padding-bottom: 16px; }
               .pt-3 { padding-top: 12px; }
@@ -581,7 +583,8 @@ export default function SignaturePage() {
               .relative { position: relative; }
               .absolute { position: absolute; }
               .left-0 { left: 0px; }
-              .bottom-\\[38px\\] { bottom: 38px; }
+              .right-0 { right: 0px; }
+              .bottom-\\[52px\\] { bottom: 52px; }
               .overflow-hidden { overflow: hidden; }
               .mix-blend-multiply { mix-blend-mode: multiply; }
               .max-h-full { max-height: 100%; }
@@ -698,6 +701,7 @@ export default function SignaturePage() {
               .flex-col { flex-direction: column; }
               .justify-between { justify-content: space-between; }
               .justify-start { justify-content: flex-start; }
+              .justify-center { justify-content: center; }
               .justify-end { justify-content: flex-end; }
               .items-end { align-items: flex-end; }
               .items-center { align-items: center; }
@@ -719,6 +723,7 @@ export default function SignaturePage() {
               .w-28 { width: 112px; }
               .w-64 { width: 256px; }
               .w-48 { width: 192px; }
+              .w-full { width: 100%; }
               .h-16 { height: 64px; }
               .pb-4 { padding-bottom: 16px; }
               .pt-3 { padding-top: 12px; }
@@ -749,7 +754,8 @@ export default function SignaturePage() {
               .relative { position: relative; }
               .absolute { position: absolute; }
               .left-0 { left: 0px; }
-              .bottom-\\[38px\\] { bottom: 38px; }
+              .right-0 { right: 0px; }
+              .bottom-\\[52px\\] { bottom: 52px; }
               .overflow-hidden { overflow: hidden; }
               .mix-blend-multiply { mix-blend-mode: multiply; }
               .max-h-full { max-height: 100%; }
